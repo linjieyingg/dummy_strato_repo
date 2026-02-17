@@ -140,3 +140,28 @@ def update_readme_for_subtract_function():
 Calculates the difference between two numbers (number1 - number2). Both numbers should be integers or floats.
 
 **Example Usage:**
+"""
+    _update_readme_section(readme_file_path, functions_section_header, subtract_function_entry_markdown, entry_title_prefix="###")
+
+
+def update_readme_for_is_even_or_odd_function():
+    """
+    Updates or creates the README.md file to include documentation for the 'is_even_or_odd' function
+    under the 'Functions' section.
+
+    If 'README.md' exists, it attempts to find the 'Functions' section and insert
+    the 'is_even_or_odd' function details. If the 'Functions' section does not exist, it will
+    be added to the end of the file. If 'README.md' does not exist, it will be
+    created with a basic structure including the 'is_even_or_odd' function documentation.
+    """
+    readme_file_path = "README.md"
+    functions_section_header = "## Functions"
+    is_even_or_odd_entry_markdown = """
+### is_even_or_odd
+
+**Syntax:** `is_even_or_odd(number)`
+
+**Description:**
+Checks if a given number is even or odd. It primarily applies to integers and floating-point numbers that are exact integers (e.g., `4.0`, `-2.0`). For non-integer floating-point numbers (e.g., `2.5`, `3.14`), it returns 'Neither Even Nor Odd', as these are not traditionally classified as even or odd.
+
+**Example Usage:**
