@@ -27,12 +27,13 @@ def _update_readme_section(readme_file_path, section_header, entry_markdown, ent
     if not entry_title_line:
         # Fallback if entry_title_prefix doesn't match, or for simpler entries
         # Use the first non-empty line as a fallback identifier
-        entry_title_line = next((line.strip() for line in entry_markdown.splitlines() if line.strip()), "").splitlines()[0]
-        if not entry_title_line:
+        first_non_empty_line = next((line.strip() for line in entry_markdown.splitlines() if line.strip()), "")
+        if first_non_empty_line:
+            entry_title_line = first_non_empty_line
+            print(f"Warning: Falling back to first non-empty line as entry title for section '{section_header}': {entry_title_line}")
+        else:
             print(f"Warning: Could not extract entry title from markdown for section '{section_header}'. Cannot check for duplicates effectively.")
             entry_title_line = "Unknown Entry" # Placeholder for logging
-        else:
-            print(f"Warning: Falling back to first non-empty line as entry title for section '{section_header}': {entry_title_line}")
 
 
     try:
@@ -163,5 +164,30 @@ def update_readme_for_is_even_or_odd_function():
 
 **Description:**
 Checks if a given number is even or odd. It primarily applies to integers and floating-point numbers that are exact integers (e.g., `4.0`, `-2.0`). For non-integer floating-point numbers (e.g., `2.5`, `3.14`), it returns 'Neither Even Nor Odd', as these are not traditionally classified as even or odd.
+
+**Example Usage:**
+"""
+    _update_readme_section(readme_file_path, functions_section_header, is_even_or_odd_entry_markdown, entry_title_prefix="###")
+
+
+def update_readme_for_is_palindrome_function():
+    """
+    Updates or creates the README.md file to include documentation for the 'is_palindrome' function
+    under the 'Functions' section.
+
+    If 'README.md' exists, it attempts to find the 'Functions' section and insert
+    the 'is_palindrome' function details. If the 'Functions' section does not exist, it will
+    be added to the end of the file. If 'README.md' does not exist, it will be
+    created with a basic structure including the 'is_palindrome' function documentation.
+    """
+    readme_file_path = "README.md"
+    functions_section_header = "## Functions"
+    is_palindrome_entry_markdown = """
+### is_palindrome
+
+**Syntax:** `is_palindrome(text)`
+
+**Description:**
+Checks if a given string `text` is a palindrome. A palindrome is a word, phrase, number, or other sequence of characters which reads the same backward as forward, ignoring capitalization, spaces, and punctuation.
 
 **Example Usage:**
