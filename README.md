@@ -191,3 +191,28 @@ def update_readme_for_is_palindrome_function():
 Checks if a given string `text` is a palindrome. A palindrome is a word, phrase, number, or other sequence of characters which reads the same backward as forward, ignoring capitalization, spaces, and punctuation.
 
 **Example Usage:**
+"""
+    _update_readme_section(readme_file_path, functions_section_header, is_palindrome_entry_markdown, entry_title_prefix="###")
+
+
+def update_readme_for_reverse_string_function():
+    """
+    Updates or creates the README.md file to include documentation for the 'reverse_string' function
+    under the 'Functions' section.
+
+    If 'README.md' exists, it attempts to find the 'Functions' section and insert
+    the 'reverse_string' function details. If the 'Functions' section does not exist, it will
+    be added to the end of the file. If 'README.md' does not exist, it will be
+    created with a basic structure including the 'reverse_string' function documentation.
+    """
+    readme_file_path = "README.md"
+    functions_section_header = "## Functions"
+    reverse_string_entry_markdown = """
+### reverse_string
+
+**Syntax:** `reverse_string(s: str)`
+
+**Description:**
+Reverses a given string `s`.
+
+**Example Usage:**
