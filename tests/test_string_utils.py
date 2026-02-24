@@ -8,19 +8,21 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 try:
-    # Import the functions to be tested from src.string_utils
-    from src.string_utils import reverse_string, count_vowels, count_letters
-except ImportError:
-    print("Error: Could not import functions from src/string_utils.py.")
-    print("Please ensure 'src/string_utils.py' exists and contains 'reverse_string', 'count_vowels', and 'count_letters' functions.")
+    # Import the functions to be tested from src.string_utils.
+    # Added 'is_palindrome' based on the presence of 'update_readme_for_is_palindrome_function'
+    # in the repository context, implying it's a function that needs testing.
+    from src.string_utils import reverse_string, count_vowels, count_letters, is_palindrome
+except ImportError as e:
+    print(f"Error: Could not import functions from src/string_utils.py: {e}")
+    print("Please ensure 'src/string_utils.py' exists and contains 'reverse_string', 'count_vowels', 'count_letters', and 'is_palindrome' functions.")
     sys.exit(1)
 
 
 class TestStringUtils(unittest.TestCase):
     """
-    Test suite for string utility functions: reverse_string, count_vowels, and count_letters.
-    Ensures that functions handle various inputs correctly, including edge cases and non-string types,
-    as defined in src/string_utils.py.
+    Test suite for string utility functions: reverse_string, count_vowels, count_letters,
+    and is_palindrome. Ensures that functions handle various inputs correctly, including
+    edge cases and non-string types, as defined in src/string_utils.py.
     """
 
     # --- Tests for reverse_string ---
@@ -163,6 +165,61 @@ class TestStringUtils(unittest.TestCase):
             count_letters(None)
         with self.assertRaises(TypeError, msg="Should raise TypeError for float input"):
             count_letters(3.14)
+            
+    # --- Tests for is_palindrome ---
+    def test_is_palindrome_empty_string(self):
+        """Test is_palindrome with an empty string."""
+        self.assertTrue(is_palindrome(""))
+
+    def test_is_palindrome_single_character(self):
+        """Test is_palindrome with a single character string."""
+        self.assertTrue(is_palindrome("a"))
+        self.assertTrue(is_palindrome("Z"))
+        self.assertTrue(is_palindrome("1"))
+
+    def test_is_palindrome_simple_palindromes(self):
+        """Test is_palindrome with simple palindromic words."""
+        self.assertTrue(is_palindrome("madam"))
+        self.assertTrue(is_palindrome("racecar"))
+        self.assertTrue(is_palindrome("level"))
+
+    def test_is_palindrome_simple_non_palindromes(self):
+        """Test is_palindrome with simple non-palindromic words."""
+        self.assertFalse(is_palindrome("hello"))
+        self.assertFalse(is_palindrome("python"))
+        self.assertFalse(is_palindrome("world"))
+
+    def test_is_palindrome_with_mixed_case(self):
+        """Test is_palindrome with mixed case strings (should ignore case)."""
+        self.assertTrue(is_palindrome("Madam"))
+        self.assertTrue(is_palindrome("Racecar"))
+        self.assertFalse(is_palindrome("Python")) # still not a palindrome
+
+    def test_is_palindrome_with_spaces_and_punctuation(self):
+        """Test is_palindrome with spaces and punctuation (should ignore them)."""
+        self.assertTrue(is_palindrome("A man, a plan, a canal: Panama"))
+        self.assertTrue(is_palindrome("No lemon, no melon"))
+        self.assertTrue(is_palindrome("Was it a car or a cat I saw?"))
+        self.assertFalse(is_palindrome("Hello world!"))
+
+    def test_is_palindrome_with_numbers(self):
+        """Test is_palindrome with numbers in the string."""
+        self.assertTrue(is_palindrome("12321"))
+        # This example combines letters, spaces, and punctuation as well, similar to 'A man...'
+        self.assertTrue(is_palindrome("Able was I ere I saw Elba")) 
+        self.assertFalse(is_palindrome("12345"))
+        self.assertTrue(is_palindrome("Aibohphobia")) # Fear of palindromes itself
+
+    def test_is_palindrome_non_string_input(self):
+        """Test is_palindrome with non-string inputs to ensure TypeError is raised."""
+        with self.assertRaises(TypeError, msg="Should raise TypeError for integer input"):
+            is_palindrome(123)
+        with self.assertRaises(TypeError, msg="Should raise TypeError for list input"):
+            is_palindrome(['a', 'b'])
+        with self.assertRaises(TypeError, msg="Should raise TypeError for None input"):
+            is_palindrome(None)
+        with self.assertRaises(TypeError, msg="Should raise TypeError for float input"):
+            is_palindrome(3.14)
 
 
 # This block allows running tests directly from the script
