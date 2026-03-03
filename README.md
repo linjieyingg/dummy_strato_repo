@@ -9,7 +9,7 @@
 
 **Files Analyzed:** 18
 
-**Last Updated:** 2026-03-03 16:47:35
+**Last Updated:** 2026-03-03 16:50:22
 
 ---
 
@@ -17,20 +17,27 @@
 ## `main.py`
 
 ```markdown
-### Purpose
-This file implements a command-line interface (CLI) using `argparse` for a simple calculator application. It currently supports an 'add' command to sum two numbers, delegating the actual calculation to an external module.
+## `main.py` Analysis
 
-### Key Components
-*   **`add_command(args)`**
-    *   **Inputs**: `args` (an `argparse.Namespace` object with `num1` and `num2` attributes, both expected to be floats).
-    *   **Outputs/Side Effects**: Calls `operations_add` with the input numbers, prints the calculated sum to standard output, or prints an error message if the operation fails due to type issues or other exceptions.
-*   **`main()`**
-    *   **Inputs**: None (implicitly processes command-line arguments).
-    *   **Outputs/Side Effects**: Configures the `argparse` parser and subparsers (specifically for the 'add' command), parses the command-line arguments, and invokes the appropriate command handler function (e.g., `add_command`) or prints the help message if no command is specified.
+### 1. Purpose
+This file implements the command-line interface (CLI) for a simple calculator, using `argparse` to handle different operations. It currently supports an 'add' command for summing two numbers, delegating the actual calculation to an external module.
 
-### Dependencies
-*   `argparse` (Python standard library)
-*   `src.operations` (a local module from which the `add` function is imported and aliased as `operations_add`)
+### 2. Key Components
+
+*   **`add_command(args)`**:
+    *   **Inputs**: `args` (an `argparse.Namespace` object) containing `num1` and `num2` (floats).
+    *   **Outputs/Side Effects**: Calls `operations_add` with the input numbers and prints the calculated sum to standard output. Includes error handling for the addition operation.
+*   **`main()`**:
+    *   **Inputs**: None (parses command-line arguments implicitly).
+    *   **Outputs/Side Effects**: Sets up the `argparse` parser and subparsers (e.g., 'add'). Parses the command-line arguments and, if a command is provided, executes the corresponding handler function (e.g., `add_command`). If no command is specified, it prints the help message.
+*   **`if __name__ == "__main__":`**:
+    *   **Inputs**: None.
+    *   **Outputs/Side Effects**: Ensures `main()` is called when the script is executed directly.
+
+### 3. Dependencies
+
+*   `argparse`: Used for creating and parsing command-line arguments and subcommands.
+*   `src.operations`: Specifically, the `add` function (aliased as `operations_add`), which performs the core addition logic.
 ```
 
 ---
@@ -39,75 +46,71 @@ This file implements a command-line interface (CLI) using `argparse` for a simpl
 ## `math_operations.py`
 
 ### Purpose
-This file provides a simple Python function to perform subtraction between two numbers, ensuring robust type checking for its inputs. It also includes an `if __name__ == "__main__":` block demonstrating its usage and error handling.
+This file provides a single utility function for performing numeric subtraction, including type validation and error handling.
 
 ### Key Components
 *   **`subtract(minuend, subtrahend)` function**:
-    *   **Inputs**: `minuend` (int | float) - The number to subtract from; `subtrahend` (int | float) - The number to subtract.
-    *   **Outputs/Side Effects**: Returns an `int` or `float` representing `minuend - subtrahend`. Raises a `TypeError` if `minuend` or `subtrahend` are not `int` or `float`.
+    *   **Inputs**:
+        *   `minuend` (int | float): The number from which to subtract.
+        *   `subtrahend` (int | float): The number to be subtracted.
+    *   **Outputs**:
+        *   Returns an `int` or `float` representing the difference (`minuend - subtrahend`).
+        *   Raises `TypeError` if either input is not an `int` or `float`.
 *   **`if __name__ == "__main__":` block**:
-    *   **Inputs**: Calls the `subtract` function with various valid and invalid numerical inputs.
-    *   **Outputs/Side Effects**: Prints the results of various subtraction operations and demonstrates error handling for incorrect input types to the console.
+    *   **Inputs**: None (executed when the script is run directly).
+    *   **Outputs/Side Effects**: Prints various example calculations and demonstrations of the `TypeError` handling to the console.
 
 ### Dependencies
-This file does not have any external dependencies or `import` statements.
+No external modules or libraries are imported; the file relies solely on standard Python built-in types and functions.
 
 ---
 
 
 ## `scripts/generate_tests_ci.py`
 
-This script is a Continuous Integration (CI) tool that identifies recently changed Python source files within specified directories (`src/`) and uses the Google Gemini API to automatically generate `pytest` unit tests for them, saving the generated tests into a `tests/` directory. It skips empty files and handles Gemini API rate limiting with retries.
+This script is a CI tool that detects recently changed Python source files and uses the Google Gemini API to automatically generate pytest unit tests for them, saving the generated tests to the `tests/` directory.
 
 ### Key Components:
 
-*   **`GEMINI_API_KEY`**: Reads the Gemini API key from environment variables; the script exits if not found.
-*   **`SOURCE_DIRS`, `TESTS_DIR`**: Global constants defining the source code directories to scan (`["src/"]`) and the output directory for tests (`tests/`). `TESTS_DIR` is created if it doesn't exist.
-*   **`get_changed_files()`**:
-    *   **Inputs**: None (implicitly uses `git` history).
-    *   **Outputs**: A list of `str` file paths for Python files changed in the last Git commit, excluding `__init__.py` files and those outside `SOURCE_DIRS`.
-    *   **Side Effects**: Executes a `git diff` command via `subprocess`.
-*   **`get_test_path(source_path: str)`**:
-    *   **Inputs**: A `str` representing a source file path (e.g., `src/foo/bar.py`).
-    *   **Outputs**: A `Path` object representing the corresponding test file path (e.g., `tests/test_bar.py`).
-    *   **Side Effects**: None.
-*   **`generate_tests(file_path: str, source_code: str)`**:
-    *   **Inputs**: `file_path` (original file path for context) and `source_code` (the content of the Python file).
-    *   **Outputs**: A `str` containing generated pytest code, or `None` if the generation fails after multiple retries.
-    *   **Side Effects**: Makes an API call to `google.generativeai` (Gemini model) and implements exponential backoff for rate limiting errors.
-*   **`main()`**:
-    *   **Inputs**: None.
-    *   **Outputs**: None.
-    *   **Side Effects**: Orchestrates the entire process: calls `get_changed_files`, iterates through them, reads source code, calls `generate_tests`, and writes the resulting test code to the appropriate file in `TESTS_DIR`.
+*   **`get_changed_files()`**
+    *   **Inputs:** None
+    *   **Outputs/Side Effects:** Returns a `list[str]` of Python file paths changed in the last Git commit, filtering for files in `SOURCE_DIRS` and excluding `__init__.py`. Uses `subprocess.run` to execute `git diff`.
+*   **`get_test_path(source_path: str)`**
+    *   **Inputs:** `source_path` (string representing the path to a source file).
+    *   **Outputs/Side Effects:** Returns a `Path` object for the corresponding test file (e.g., `src/foo.py` -> `tests/test_foo.py`).
+*   **`generate_tests(file_path: str, source_code: str)`**
+    *   **Inputs:** `file_path` (original path of the source file), `source_code` (the content of the source file).
+    *   **Outputs/Side Effects:** Calls the Gemini API with a prompt to generate pytest code. Returns the generated Python test code as a `str`, or `None` if generation fails after retries (including rate limit handling).
+*   **`main()`**
+    *   **Inputs:** None
+    *   **Outputs/Side Effects:** Orchestrates the entire process. Calls `get_changed_files`, iterates through them, reads source code, calls `generate_tests`, and writes the generated tests to the appropriate file in the `tests/` directory. Prints progress and error messages.
 
 ### Dependencies:
 
-*   **Python Standard Library**: `os`, `subprocess`, `re`, `time`, `random`, `pathlib`.
-*   **Third-party Libraries**:
-    *   `google.generativeai`: For interacting with the Gemini API.
-*   **External Tools**:
-    *   `git`: Used to detect changed files.
-*   **Environment Variables**:
-    *   `GEMINI_API_KEY`: Required for authentication with the Gemini API.
+*   **Imports:** `os`, `subprocess`, `re`, `time`, `random`, `google.generativeai` (aliased as `genai`), `pathlib.Path`.
+*   **External Tools/APIs:**
+    *   **Git:** Used via `subprocess` to determine changed files.
+    *   **Google Gemini API:** Primary dependency for generating tests. Requires `GEMINI_API_KEY` environment variable.
+    *   **Pytest:** The script generates tests in the `pytest` framework format.
 
 ---
 
 
 ## `src/calculator.py`
 
-```markdown
-This file defines a single function for performing multiplication. It serves as a basic mathematical utility, likely intended for use within a larger calculator application or module.
+### Summary of src/calculator.py
 
-### Key Components:
+**1. Purpose**
+This file defines a fundamental utility function for performing multiplication. It provides a simple, reusable way to calculate the product of two numbers within a larger calculator system.
 
-*   **Function `multiply`**:
-    *   **Inputs**: Takes two floating-point numbers (`num1`, `num2`).
-    *   **Outputs**: Returns a single floating-point number, which is the product of `num1` and `num2`.
+**2. Key Components**
+*   **Function**: `multiply(num1: float, num2: float)`
+    *   **Inputs**: Takes two floating-point numbers, `num1` and `num2`, as arguments.
+    *   **Outputs**: Returns a `float` representing the product of `num1` and `num2`.
+    *   **Side Effects**: None; it is a pure function.
 
-### Dependencies:
-
-*   None. This file is self-contained and uses no external imports.
-```
+**3. Dependencies**
+This file has no external dependencies or imports. It uses only standard Python types and arithmetic operators.
 
 ---
 
@@ -117,25 +120,20 @@ This file defines a single function for performing multiplication. It serves as 
 ```markdown
 ## File Analysis: `src/commands/round_cmd.py`
 
-### Purpose
-This file implements a command-line utility named `round` that takes a numeric string and an optional decimal place as arguments. It rounds the given number to the specified decimal precision (or to the nearest integer by default) and prints the result.
+### 1. Purpose
+This file implements a command-line utility that rounds a given floating-point number to a specified decimal place. If no decimal place is provided, it defaults to rounding to the nearest integer.
 
-### Key Components
-
+### 2. Key Components
 *   **`run(args: list)` function**:
-    *   **Inputs**: `args` - A list of strings, typically `[<number_to_round_str>, [decimal_place_str]]`.
-    *   **Outputs/Side Effects**:
-        *   Prints the original and rounded number to standard output upon successful execution.
-        *   Prints error messages and usage instructions to standard output if inputs are invalid or missing.
-        *   Exits the program with `sys.exit(1)` upon encountering errors.
-        *   Calls the `round_number_to_place` utility function.
+    *   **Inputs**: `args` (a list of strings) expects `[<number_to_round_str>, [decimal_place_str]]`.
+    *   **Outputs/Side Effects**: Prints the original and rounded numbers to `stdout`. It prints error messages to `stdout` and exits the program with a status code of `1` (using `sys.exit(1)`) if input validation fails or an unexpected error occurs during rounding.
 *   **`if __name__ == "__main__":` block**:
-    *   Contains example usage and test cases for the `run` function, demonstrating both successful executions and various error scenarios.
+    *   **Inputs**: None directly, it calls the `run` function with predefined arguments.
+    *   **Outputs/Side Effects**: Executes a series of test cases demonstrating both successful rounding operations and various error conditions handled by the `run` function, printing their outputs.
 
-### Dependencies
-
-*   `sys`: Used for exiting the program with an error code (`sys.exit(1)`).
-*   `src.utils.math_utils.round_number_to_place`: An external utility function responsible for the actual rounding logic.
+### 3. Dependencies
+*   **`sys`**: Used for `sys.exit()` to terminate the program on errors.
+*   **`src.utils.math_utils.round_number_to_place`**: A custom utility function imported for performing the actual rounding logic.
 ```
 
 ---
@@ -143,87 +141,85 @@ This file implements a command-line utility named `round` that takes a numeric s
 
 ## `src/number_utils.py`
 
-```markdown
-## File: src/number_utils.py
-
-### Purpose
-This file provides utility functions for number operations, specifically containing a function to determine if a given integer or integer-equivalent float is even or odd.
+This file defines utility functions for number operations, specifically determining the parity of a number.
 
 ### Key Components
+
 *   **`is_even_or_odd(num)` function**:
-    *   **Inputs**: `num` (int or float) - The number to be checked for parity.
-    *   **Outputs**:
-        *   Returns a string: `"even"` if the number is even, or `"odd"` if the number is odd.
-        *   Raises `TypeError` if `num` is not an `int` or `float`.
-        *   Raises `ValueError` if `num` is a `float` with a non-zero fractional part (i.e., not equivalent to an integer).
+    *   **Inputs**: `num` (an `int` or `float`).
+    *   **Outputs**: Returns the string `"even"` or `"odd"` if `num` is an integer (or a float equivalent to an integer).
+    *   **Side Effects**: Raises `TypeError` if `num` is not a number, or `ValueError` if `num` is a float with a non-zero fractional part (e.g., `4.5`).
 
 ### Dependencies
-*   `numbers` (Python standard library module) - Used for type checking to ensure the input is a numeric type.
-```
+
+*   `numbers`: Used for checking if an input is a generic number type.
 
 ---
 
 
 ## `src/operations.py`
 
-```markdown
-This file defines fundamental arithmetic operations.
+This file defines a module for basic mathematical operations. It currently provides a function to safely add two numbers, including type validation.
 
-## Key Components:
+### Key Components
 
-*   **`add(a, b)` function**:
-    *   **Inputs**: `a` (an integer or float) and `b` (an integer or float).
-    *   **Outputs**: Returns the sum of `a` and `b` as an integer or float. It raises a `TypeError` if either input is not an integer or float.
+*   **Function**: `add(a, b)`
+    *   **Inputs**: `a` (int or float), `b` (int or float) - the two numbers to be added.
+    *   **Outputs**: Returns the sum of `a` and `b` (int or float).
+    *   **Side Effects**: Raises a `TypeError` if either `a` or `b` is not an integer or a float.
 
-## Dependencies:
+### Dependencies
 
-*   This file has no explicit external dependencies or imports. It uses only built-in Python features.
-```
+*   None. This file uses only built-in Python types and functions.
 
 ---
 
 
 ## `src/string_utils.py`
 
-This Python file, `string_utils.py`, provides a collection of utility functions designed for common string manipulation and analysis tasks. It includes functionalities to check string properties like being a palindrome or anagram, count specific characters, and reformat strings.
+This file, `src/string_utils.py`, provides a collection of utility functions for performing common string manipulation and analysis tasks.
 
 ### Key Components:
 
-*   **`is_palindrome(text: str)`**:
-    *   **Inputs**: `text` (a string).
-    *   **Outputs**: A boolean indicating if the input string is a palindrome, ignoring capitalization, spaces, and punctuation.
-*   **`count_vowels(s: str)`**:
-    *   **Inputs**: `s` (a string).
-    *   **Outputs**: An integer representing the count of vowels (a, e, i, o, u, case-insensitive) in the string.
-*   **`capitalize_words(s: str)`**:
-    *   **Inputs**: `s` (a string).
-    *   **Outputs**: A new string with the first letter of each word capitalized.
-*   **`is_anagram(s1: str, s2: str)`**:
-    *   **Inputs**: `s1`, `s2` (two strings).
-    *   **Outputs**: A boolean indicating if the two strings are anagrams of each other, ignoring capitalization, spaces, and punctuation.
-*   **`remove_spaces(s: str)`**:
-    *   **Inputs**: `s` (a string).
-    *   **Outputs**: A new string with all space characters removed.
-*   **`find_longest_word(s: str)`**:
-    *   **Inputs**: `s` (a string).
-    *   **Outputs**: The longest word found in the string (separated by spaces). Returns an empty string if no words are found.
+*   **`reverse_string(text: str)`**
+    *   **Inputs:** A string `text`.
+    *   **Outputs:** The reversed version of the input string.
+*   **`count_vowels(text: str)`**
+    *   **Inputs:** A string `text`.
+    *   **Outputs:** An integer representing the count of vowels (case-insensitive) in the string.
+*   **`count_letters(text: str)`**
+    *   **Inputs:** A string `text`.
+    *   **Outputs:** An integer representing the count of alphabetic characters in the string.
+*   **`is_palindrome(text: str)`**
+    *   **Inputs:** A string `text`.
+    *   **Outputs:** A boolean indicating whether the string is a palindrome, ignoring capitalization, spaces, and punctuation.
 
 ### Dependencies:
 
-*   None (The `import string` statement is present but the `string` module is not actively utilized by any of the functions).
+*   `string` (Python's built-in string module) - *Note: The module is imported but not explicitly used by the functions as currently written.*
 
 ---
 
 
 ## `src/utils.py`
 
-*   **Purpose**: This file provides a utility function to check if a given string is a palindrome, robustly handling case and non-alphanumeric characters.
-*   **Key Components**:
-    *   `is_palindrome(text: str)`:
-        *   **Inputs**: Takes a single string `text`.
-        *   **Outputs**: Returns `True` if the processed string is a palindrome, `False` otherwise. It raises a `TypeError` if the input is not a string.
-*   **Dependencies**:
-    *   `re` (regular expression module)
+```markdown
+## File Analysis: `src/utils.py`
+
+### 1. Purpose
+This file contains general utility functions for string manipulation. Currently, it provides a function to efficiently check if a given string is a palindrome, ignoring case and non-alphanumeric characters.
+
+### 2. Key Components
+
+*   **Function: `is_palindrome`**
+    *   **Inputs**: `text` (string) - The string to be checked for palindrome property.
+    *   **Outputs or Side Effects**:
+        *   Returns `bool`: `True` if the string is a palindrome after processing (converting to lowercase and removing non-alphanumeric characters), `False` otherwise.
+        *   Raises `TypeError`: If the input `text` is not a string.
+
+### 3. Dependencies
+*   `re`: This module is imported and used for regular expression operations, specifically `re.sub` to remove non-alphanumeric characters from the input string.
+```
 
 ---
 
@@ -233,255 +229,228 @@ This Python file, `string_utils.py`, provides a collection of utility functions 
 ```markdown
 ## File Summary: `src/utils/math_utils.py`
 
-This file provides a utility function for rounding numbers to specified place values using descriptive string names. It aims to simplify number rounding by abstracting the `ndigits` argument of Python's built-in `round()` function.
+### 1. Purpose
+This file provides utility functions for mathematical operations, specifically focusing on rounding numbers to specified place values using human-readable string descriptions.
 
-### Key Components:
-
+### 2. Key Components
 *   **`_ROUNDING_PLACES` (Dictionary)**:
-    *   **Inputs**: N/A (a global constant mapping).
-    *   **Outputs/Side Effects**: Maps common place names (e.g., 'ones', ' 'tens', 'hundredths') to their corresponding integer or decimal place values for rounding (`ndigits` argument for `round()`).
-*   **`round_number_to_place(number, place)` (Function)**:
+    *   **Description**: A private dictionary mapping common place names (e.g., 'ones', 'tens', 'hundredths') to their corresponding `ndigits` argument values for Python's built-in `round()` function. Positive values represent decimal places, and negative values represent integer places.
+    *   **Inputs**: N/A (static mapping).
+    *   **Outputs**: Provides integer `ndigits` values based on string keys.
+
+*   **`round_number_to_place(number: Union[float, int], place: str) -> float` (Function)**:
+    *   **Description**: Rounds a given number to a specific place value, identified by a case-insensitive string. It utilizes the `_ROUNDING_PLACES` mapping.
     *   **Inputs**:
         *   `number` (`Union[float, int]`): The numeric value to be rounded.
-        *   `place` (`str`): A case-insensitive string representing the desired place value (e.g., 'tens', 'hundredths', 'thousands').
-    *   **Outputs/Side Effects**: Returns a `float` representing the `number` rounded to the specified `place`. It raises `TypeError` if inputs are incorrect or `ValueError` if the `place` string is not recognized.
+        *   `place` (`str`): A string describing the desired rounding precision (e.g., 'tens', 'hundredths').
+    *   **Outputs**: Returns a `float` representing the number rounded according to the specified `place`.
+    *   **Side Effects**: Raises `TypeError` if inputs are not of the expected types or `ValueError` if the `place` string is not recognized. It uses Python's "round half to even" behavior.
 
-### Dependencies:
-
-*   `math` (imported but not used in the provided code snippet)
-*   `typing.Union`
+### 3. Dependencies
+*   **`math`**: Imported but not directly used in the provided code snippet.
+*   **`typing.Union`**: Used for type hinting the `number` parameter in `round_number_to_place`.
+```
 
 ---
 
 
 ## `src/utils/string_utils.py`
 
-This file, `string_utils.py`, provides a collection of utility functions for common string manipulation tasks like reversing strings and counting specific character types. It aims to offer robust and reusable string processing capabilities.
+This file, `string_utils.py`, provides a collection of utility functions for common string manipulation tasks. It offers functionalities like reversing strings, counting vowels, and counting alphabetic characters, all with type validation.
 
 ### Key Components:
 
 *   **`reverse_string(s: str) -> str`**:
-    *   **Inputs**: `s` (a string).
-    *   **Outputs**: Returns the input string in reverse order. Raises `TypeError` if `s` is not a string.
+    *   **Inputs**: A string `s`.
+    *   **Outputs**: The reversed string. Raises `TypeError` if input is not a string.
 *   **`count_vowels(s: str) -> int`**:
-    *   **Inputs**: `s` (a string).
-    *   **Outputs**: Returns an integer representing the count of vowels (case-insensitive) in the string. Raises `TypeError` if `s` is not a string.
+    *   **Inputs**: A string `s`.
+    *   **Outputs**: An integer representing the count of vowels (a, e, i, o, u, case-insensitive). Raises `TypeError` if input is not a string.
 *   **`count_alphabetic_characters(s: str) -> int`**:
-    *   **Inputs**: `s` (a string).
-    *   **Outputs**: Returns an integer representing the count of alphabetic characters (a-z, A-Z) in the string. Raises `TypeError` if `s` is not a string.
+    *   **Inputs**: A string `s`.
+    *   **Outputs**: An integer representing the count of alphabetic characters (a-z, A-Z). Raises `TypeError` if input is not a string.
 *   **`if __name__ == "__main__":` block**:
-    *   **Purpose**: Demonstrates the usage of the utility functions with various inputs and showcases their `TypeError` handling.
+    *   **Purpose**: Demonstrates the usage of the above functions and their error handling for invalid input types.
 
 ### Dependencies:
 
-*   **`collections`**: Imported, but not utilized within the provided code.
+*   `collections`: Imported but not actually used by any of the provided functions in this file.
 
 ---
 
 
 ## `test_math_operations.py`
 
-```markdown
-## Analysis of `test_math_operations.py`
+This file contains unit tests for a `subtract` function, presumably defined in `math_operations.py`, ensuring its correctness across a variety of numerical inputs and proper error handling for invalid types.
 
-### Purpose
-This file contains a comprehensive suite of unit tests for a `subtract` function, presumably defined in `math_operations.py`, to ensure its correctness across various numerical scenarios and error conditions.
+### Key Components:
 
-### Key Components
-*   **Class `TestSubtractFunction(unittest.TestCase)`**:
-    *   **Description**: The primary test class that inherits from `unittest.TestCase`, providing a framework for writing isolated test cases.
-    *   **Inputs**: None directly; methods within use `self` to access `unittest` assertion methods.
-    *   **Outputs/Side Effects**: Contains multiple test methods, each asserting specific behaviors of the `subtract` function.
-*   **Test Methods (e.g., `test_positive_numbers`, `test_negative_numbers`, `test_floating_point_numbers`, `test_invalid_input_types`)**:
-    *   **Description**: Each method (`test_*`) defines a specific test case for the `subtract` function, covering scenarios like positive/negative integers, mixed types, zero values, large numbers, floating-point numbers, and error handling for invalid input types.
-    *   **Inputs**: Calls the `subtract` function with different combinations of numeric types (integers, floats) and non-numeric types (strings, lists, None) to test its behavior.
-    *   **Outputs/Side Effects**: Uses `self.assertEqual`, `self.assertAlmostEqual`, and `self.assertRaises` to verify that `subtract` returns the expected result or raises the appropriate `TypeError` for invalid inputs.
-*   **`if __name__ == '__main__':` block**:
-    *   **Description**: Standard Python idiom to allow the test suite to be run directly from the command line.
-    *   **Inputs**: `unittest.main()` command.
-    *   **Outputs/Side Effects**: Executes all tests defined in `TestSubtractFunction` and reports the results to the console.
+*   **Class**: `TestSubtractFunction`
+    *   **Description**: A `unittest.TestCase` subclass that groups and executes multiple test methods for the `subtract` function.
+    *   **Inputs**: N/A directly for the class; its methods test the `subtract` function with two arguments.
+    *   **Outputs/Side Effects**: Each test method asserts conditions using `self.assertEqual`, `self.assertAlmostEqual`, or `self.assertRaises` to verify the behavior of `subtract`, resulting in test passes or failures.
 
-### Dependencies
-*   **`unittest`**: A built-in Python module for writing and running unit tests.
-*   **`subtract`**: A function imported from `math_operations.py`, which is the subject of these tests.
-```
+*   **Test Methods**: `test_positive_numbers`, `test_negative_numbers`, `test_mixed_positive_negative`, `test_zero_values`, `test_floating_point_numbers`, `test_large_numbers`, `test_invalid_input_types`, `test_mixed_numeric_types`
+    *   **Description**: Individual methods within `TestSubtractFunction` that each focus on a specific scenario for the `subtract` function.
+    *   **Inputs (to `subtract` function being tested)**: Various combinations of positive and negative integers, floating-point numbers, zero, large numbers, and invalid types (strings, lists, `None`).
+    *   **Outputs/Side Effects (of `subtract` function being tested)**: Expected to return the numerical difference of its arguments (integer or float) or raise a `TypeError` for non-numeric inputs.
+
+### Dependencies:
+
+*   `unittest`: Python's standard library for unit testing.
+*   `math_operations.subtract`: The `subtract` function imported from an external module named `math_operations`.
 
 ---
 
 
 ## `tests/test_calculator.py`
 
-This file contains unit tests for a `multiply` function, ensuring it correctly handles various numerical scenarios including integers, floats, negative numbers, zero, large numbers, and multiplication by one.
+```markdown
+1.  **Purpose**: This file contains a suite of unit tests for the `multiply` function, ensuring its correctness across various numerical scenarios using the `pytest` framework. It verifies the function's behavior with different types of numbers and edge cases.
 
-### Key Components:
+2.  **Key Components**:
+    *   `test_multiply_integers()`: Tests `multiply` with positive integer operands.
+    *   `test_multiply_floats()`: Tests `multiply` with floating-point operands, using `pytest.approx` for precision.
+    *   `test_multiply_negative_numbers()`: Tests `multiply` with negative numbers and mixed signs.
+    *   `test_multiply_by_zero()`: Tests `multiply` when one operand is zero.
+    *   `test_multiply_large_numbers()`: Tests `multiply` with large integer operands.
+    *   `test_multiply_with_one()`: Tests `multiply` when one operand is 1 or -1.
+    *   **Inputs**: Each test function implicitly uses hardcoded numerical pairs (e.g., `(2, 3)`, `(0.5, 0.5)`) as inputs to the `multiply` function.
+    *   **Outputs/Side Effects**: Each test function returns nothing directly but performs assertions to check if the `multiply` function returns the expected result. A successful execution indicates the `multiply` function is working as intended for the tested cases, while failures highlight potential bugs.
 
-*   **`test_multiply_integers()`**:
-    *   **Inputs**: Two positive integers.
-    *   **Outputs/Side Effects**: Asserts the `multiply` function returns the correct integer product.
-*   **`test_multiply_floats()`**:
-    *   **Inputs**: Two floating-point numbers.
-    *   **Outputs/Side Effects**: Asserts the `multiply` function returns the correct float product, using `pytest.approx` for precision comparisons.
-*   **`test_multiply_negative_numbers()`**:
-    *   **Inputs**: Two numbers, including negative values and mixed signs.
-    *   **Outputs/Side Effects**: Asserts the `multiply` function returns the correct product, respecting sign rules.
-*   **`test_multiply_by_zero()`**:
-    *   **Inputs**: Two numbers, where one operand is zero.
-    *   **Outputs/Side Effects**: Asserts the `multiply` function returns zero.
-*   **`test_multiply_large_numbers()`**:
-    *   **Inputs**: Two large integer numbers.
-    *   **Outputs/Side Effects**: Asserts the `multiply` function returns the correct product for large integers.
-*   **`test_multiply_with_one()`**:
-    *   **Inputs**: Two numbers, where one operand is 1 or -1.
-    *   **Outputs/Side Effects**: Asserts the `multiply` function returns the other operand (or its negative) as expected.
-
-### Dependencies:
-
-*   `pytest`: Used for the testing framework and `pytest.approx` for float comparisons.
-*   `src.calculator.multiply`: The specific function under test, imported from the `src` directory.
+3.  **Dependencies**:
+    *   `pytest`: Used for defining and running tests, including utilities like `pytest.approx` for floating-point comparisons.
+    *   `src.calculator.multiply`: The actual `multiply` function being tested, imported from the `src/calculator.py` module.
+```
 
 ---
 
 
 ## `tests/test_math_utils.py`
 
-```markdown
-## File Analysis: tests/test_math_utils.py
+This file contains a comprehensive suite of unit tests for the `round_number_to_place` function, ensuring its correctness across various scenarios and its adherence to Python's rounding behavior. It validates both functional requirements and error handling for invalid inputs.
 
-### Purpose
-This file contains comprehensive unit tests for the `round_number_to_place` function, ensuring its correctness across various numerical scenarios, different rounding precisions (including negative places for significant figures), and proper error handling for invalid input types.
+### Key Components:
 
-### Key Components
+*   **Class: `TestRoundNumberToPlace`**
+    *   **Description**: A test class inheriting from `unittest.TestCase` that groups all tests for the `round_number_to_place` function.
+    *   **Inputs**: N/A (as a class, its methods take `self`)
+    *   **Outputs/Side Effects**: Executes test assertions; fails if `round_number_to_place` behaves unexpectedly, passes otherwise.
+    *   **Methods**:
+        *   `test_positive_numbers(self)`: Tests rounding of positive floating-point and integer numbers to various positive decimal places.
+        *   `test_negative_numbers(self)`: Tests rounding of negative floating-point and integer numbers to various positive decimal places.
+        *   `test_round_half_to_even_behavior(self)`: Specifically tests cases where numbers end in .5 (or equivalent) to verify Python's round-half-to-even (banker's rounding) rule for both positive and negative values.
+        *   `test_zero_and_no_rounding_needed(self)`: Tests rounding behavior for zero and numbers that do not require decimal adjustment.
+        *   `test_different_positive_places(self)`: Explores rounding with various positive integer `place` values, including scenarios involving carry-over.
+        *   `test_negative_place_values(self)`: Tests rounding to tens, hundreds, etc., using negative `place` values, mimicking built-in `round()` behavior.
+        *   `test_invalid_number_input_type(self)`: Verifies that a `TypeError` is raised when the `number` argument is not numeric.
+        *   `test_invalid_place_input_type(self)`: Verifies that a `TypeError` is raised when the `place` argument is not an integer.
 
-*   **Class: `TestRoundNumberToPlace(unittest.TestCase)`**
-    *   **Description**: This class inherits from `unittest.TestCase` and groups all the individual test methods for the `round_number_to_place` function.
-    *   **Inputs**: The class itself takes no direct inputs, but its methods implicitly call `round_number_to_place` with specific test values.
-    *   **Outputs/Side Effects**: It executes a series of assertions (`self.assertEqual`, `self.assertRaises`) to verify the expected behavior of `round_number_to_place`, reporting test results (pass/fail).
+### Dependencies:
 
-*   **Test Methods (e.g., `test_positive_numbers`, `test_round_half_to_even_behavior`, `test_negative_place_values`, `test_invalid_place_input_type`)**
-    *   **Description**: Each method focuses on testing a specific aspect or edge case of the `round_number_to_place` function, covering positive/negative numbers, zero, various rounding places (positive and negative), Python's round-half-to-even behavior, and type-checking for arguments.
-    *   **Inputs**: Each method provides specific `number` and `place` arguments to `round_number_to_place`.
-    *   **Outputs/Side Effects**: Each method uses `self.assertEqual()` to check if the function returns the expected rounded value, or `self.assertRaises()` to confirm that it raises the correct error for invalid inputs.
-
-*   **Path Manipulation (`sys.path.insert(...)`)**
-    *   **Description**: This code snippet dynamically adds the `src/utils` directory to the Python system path.
-    *   **Inputs**: Uses `__file__`, `os.path` functions to construct an absolute path to the `src/utils` directory.
-    *   **Outputs/Side Effects**: Modifies `sys.path` to allow the subsequent import of `math_utils.py`.
-
-### Dependencies
-
-*   **Standard Library**:
-    *   `unittest`: For creating and running unit tests.
-    *   `sys`: Used to manipulate the Python import path.
-    *   `os`: Used for path manipulation (e.g., `os.path.abspath`, `os.path.join`, `os.path.dirname`).
-*   **Local Module**:
-    *   `math_utils`: Specifically imports the `round_number_to_place` function, which is the subject of these tests. This module is expected to be found at `project_root/src/utils/math_utils.py`.
-```
+*   **`unittest`**: Python's standard library module for creating and running unit tests.
+*   **`sys`**: Used to manipulate `sys.path` to allow importing the `math_utils` module from a relative path (`src/utils`).
+*   **`os`**: Used for path manipulation (`os.path.abspath`, `os.path.join`, `os.path.dirname`).
+*   **`math_utils.round_number_to_place`**: The function being tested, imported from `src/utils/math_utils.py`.
 
 ---
 
 
 ## `tests/test_number_utils.py`
 
-This file contains unit tests for the `is_even_or_odd` function from a `number_utils` module. It ensures the function correctly identifies even and odd integers, handles large numbers, and raises a `TypeError` for non-integer inputs.
+```markdown
+## File Analysis: tests/test_number_utils.py
 
-### Key Components:
+1.  **Purpose**: This file contains unit tests for the `is_even_or_odd` function, which is expected to reside in the `src/number_utils.py` module. It verifies the function's behavior with various integer, non-integer, and edge-case inputs.
 
-*   **Path Manipulation & Import Handling**: Adds the parent `src` directory to the Python path to import `is_even_or_odd`. Includes a `try-except ImportError` block to provide a graceful fallback (a placeholder function raising `NotImplementedError`) if the module or function is not found.
-*   **`TestNumberUtils` Class**:
-    *   **Inputs**: Inherits from `unittest.TestCase`.
-    *   **Outputs**: Contains several test methods (`test_even_numbers`, `test_odd_numbers`, `test_non_integer_inputs`, `test_large_numbers`) that call `is_even_or_odd` with various inputs and use `self.assertEqual` or `self.assertRaises` to verify expected behavior.
-*   **Test Methods (`test_even_numbers`, `test_odd_numbers`, `test_non_integer_inputs`, `test_large_numbers`)**:
-    *   **Inputs**: Call the `is_even_or_odd` function with specific integers (even, odd, large) or non-integer types.
-    *   **Outputs**: Assert that the function returns "Even", "Odd", or raises a `TypeError` as expected.
-*   **`if __name__ == '__main__':` block**: Executes all defined tests using `unittest.main()` when the script is run directly.
+2.  **Key Components**:
+    *   **Path Manipulation**: Uses `sys` and `os` to dynamically add the parent's `src` directory to the Python path.
+        *   *Inputs*: Current file's path, relative path segments.
+        *   *Outputs/Side Effects*: Modifies `sys.path`.
+    *   **Module Import & Fallback**: Attempts to import `is_even_or_odd` from `number_utils`.
+        *   *Inputs*: Module `number_utils` and function `is_even_or_odd`.
+        *   *Outputs/Side Effects*: Imports the function if found; otherwise, prints a warning and defines a placeholder `is_even_or_odd` that raises `NotImplementedError`.
+    *   **`class TestNumberUtils(unittest.TestCase)`**: A test suite for the `is_even_or_odd` function.
+        *   *Inputs*: None (methods are self-contained).
+        *   *Outputs/Side Effects*: Runs assertions on the `is_even_or_odd` function's output.
+        *   **`test_even_numbers()`**: Tests `is_even_or_odd` with various even integers (positive, negative, zero).
+        *   **`test_odd_numbers()`**: Tests `is_even_or_odd` with various odd integers (positive, negative).
+        *   **`test_non_integer_inputs()`**: Tests `is_even_or_odd` with non-integer inputs (float, string, list, None), asserting `TypeError` is raised.
+        *   **`test_large_numbers()`**: Tests `is_even_or_odd` with large even and odd integers.
+    *   **`if __name__ == '__main__': unittest.main()`**: Standard entry point for running the tests.
+        *   *Inputs*: None.
+        *   *Outputs/Side Effects*: Executes all tests within `TestNumberUtils`.
 
-### Dependencies:
-
-*   `unittest`: For creating and running unit tests.
-*   `sys`: Used to manipulate the Python system path.
-*   `os`: Used for path manipulation (e.g., `os.path.abspath`, `os.path.join`).
-*   `number_utils.is_even_or_odd`: The external function being tested, expected from a `src` directory relative to the test file.
+3.  **Dependencies**:
+    *   `unittest` (Python standard library for testing)
+    *   `sys` (Python standard library for system-specific parameters and functions)
+    *   `os` (Python standard library for interacting with the operating system)
+    *   `number_utils` (a custom module, expected to be in `src/`, containing the `is_even_or_odd` function)
+```
 
 ---
 
 
 ## `tests/test_operations.py`
 
-```markdown
-## Analysis of `tests/test_operations.py`
+This file contains unit tests for the `add` function found in the `src/operations.py` module, ensuring its correctness across various numeric types and scenarios, including proper error handling for non-numeric inputs.
 
-### Purpose
-This file contains unit tests for the `add` function, which is expected to be found in the `src/operations.py` module. It ensures the `add` function correctly handles various numeric types and edge cases, and properly raises errors for non-numeric inputs.
+### Key Components:
 
-### Key Components
-
-*   **Path Modification (`sys.path.insert`, `os.path.abspath`, `os.path.join`):**
-    *   **Inputs:** Current file's directory and a relative path (`../src`).
-    *   **Outputs/Side Effects:** Adds the `src` directory to the Python system path, allowing `operations` module to be imported.
-*   **`TestOperations` Class (`unittest.TestCase` subclass):**
-    *   This class serves as the test suite for the `operations` module.
-    *   **`test_add_positive_integers`:**
-        *   **Inputs:** Two positive integers.
-        *   **Outputs/Side Effects:** Asserts that `operations.add` returns the correct sum.
-    *   **`test_add_negative_integers`:**
-        *   **Inputs:** Two negative integers.
-        *   **Outputs/Side Effects:** Asserts that `operations.add` returns the correct sum.
-    *   **`test_add_mixed_integers`:**
-        *   **Inputs:** A positive and a negative integer.
-        *   **Outputs/Side Effects:** Asserts that `operations.add` returns the correct sum.
-    *   **`test_add_zero`:**
-        *   **Inputs:** Integers, one of which is zero.
-        *   **Outputs/Side Effects:** Asserts that `operations.add` returns the correct sum.
-    *   **`test_add_floats`:**
-        *   **Inputs:** Two floating-point numbers.
-        *   **Outputs/Side Effects:** Asserts that `operations.add` returns the correct sum.
-    *   **`test_add_floats_precision`:**
-        *   **Inputs:** Floating-point numbers that may involve precision issues.
-        *   **Outputs/Side Effects:** Uses `assertAlmostEqual` to check if `operations.add` returns an approximately correct sum.
-    *   **`test_add_large_numbers`:**
-        *   **Inputs:** Very large integers.
-        *   **Outputs/Side Effects:** Asserts that `operations.add` returns the correct sum.
-    *   **`test_add_mixed_types_numeric`:**
-        *   **Inputs:** Mixed integer and float types.
-        *   **Outputs/Side Effects:** Asserts that `operations.add` returns the correct sum.
-    *   **`test_add_non_numeric_input`:**
-        *   **Inputs:** Various non-numeric types (strings, lists, None, dictionaries).
-        *   **Outputs/Side Effects:** Asserts that `operations.add` raises a `TypeError`.
+*   **Class: `TestOperations(unittest.TestCase)`**
+    *   **Purpose**: A test suite containing multiple individual test methods for the `operations.add` function.
+    *   **Inputs**: Inherits testing utilities from `unittest.TestCase`.
+    *   **Outputs/Side Effects**: Each method within this class runs assertions against the `operations.add` function, reporting success or failure for specific test cases.
+*   **Methods (Test Cases):**
+    *   `test_add_positive_integers`, `test_add_negative_integers`, `test_add_mixed_integers`, `test_add_zero`, `test_add_large_numbers`:
+        *   **Inputs**: Call `operations.add` with various integer combinations (positive, negative, zero, large numbers).
+        *   **Outputs/Side Effects**: Use `self.assertEqual` to verify the sum matches the expected integer result.
+    *   `test_add_floats`, `test_add_floats_precision`:
+        *   **Inputs**: Call `operations.add` with floating-point numbers.
+        *   **Outputs/Side Effects**: Use `self.assertEqual` for exact float comparisons and `self.assertAlmostEqual` for comparisons requiring precision handling.
+    *   `test_add_mixed_types_numeric`:
+        *   **Inputs**: Call `operations.add` with a mix of integer and float arguments.
+        *   **Outputs/Side Effects**: Use `self.assertEqual` to verify the sum matches the expected float result.
+    *   `test_add_non_numeric_input`:
+        *   **Inputs**: Call `operations.add` with non-numeric types (strings, lists, `None`, dictionaries).
+        *   **Outputs/Side Effects**: Uses `with self.assertRaises(TypeError)` to confirm that `operations.add` correctly raises a `TypeError` for invalid input types.
 *   **Main Execution Block (`if __name__ == '__main__': unittest.main()`):**
-    *   **Inputs:** None directly when run.
-    *   **Outputs/Side Effects:** Discovers and runs all test methods within `TestOperations` if the script is executed directly.
+    *   **Purpose**: Allows the tests to be run directly when the script is executed.
+    *   **Inputs**: None.
+    *   **Outputs/Side Effects**: Discovers and executes all test methods within `TestOperations`, printing the test results to the console.
 
-### Dependencies
-*   **`unittest`**: Python's standard library for creating and running unit tests.
-*   **`sys`**: Used to modify the Python import path (`sys.path`).
-*   **`os`**: Used for operating system dependent functionality, primarily for path manipulation (`os.path.abspath`, `os.path.join`, `os.path.dirname`).
-*   **`operations`**: An external module (expected in `src/operations.py`) that contains the `add` function being tested.
-```
+### Dependencies:
+
+*   `unittest`: Python's standard unit testing framework.
+*   `sys`: Used to modify the Python execution path to ensure `operations` module can be imported.
+*   `os`: Used for path manipulation to correctly locate the `src` directory.
+*   `operations`: The external module containing the `add` function under test, imported from `../src/operations.py`.
 
 ---
 
 
 ## `tests/test_string_utils.py`
 
-This file is a unit test suite (`TestStringUtils`) for a Python module `src.string_utils`, designed to verify the correctness and robustness of string utility functions including `reverse_string`, `count_vowels`, `count_letters`, and `is_palindrome` across various inputs and edge cases. It ensures that these functions handle valid strings as well as raise `TypeError` for non-string inputs.
+```markdown
+1.  **Purpose**: This file provides a comprehensive unit test suite for string utility functions (`reverse_string`, `count_vowels`, `count_letters`, and `is_palindrome`) located in `src/string_utils.py`, ensuring their correct functionality, edge case handling, and proper error (`TypeError`) propagation for non-string inputs.
 
-### Key Components:
+2.  **Key Components**:
+    *   **Path Configuration**: Uses `sys.path.insert` and `os` module functions to dynamically add the parent directory to the Python path, allowing the import of modules from the `src` directory.
+        *   **Inputs**: Current file's path.
+        *   **Outputs/Side Effects**: Modifies `sys.path` to enable module discovery; exits with an error if `src/string_utils.py` or its required functions are not found.
+    *   **`TestStringUtils` Class**: Inherits from `unittest.TestCase` and groups all related test methods for the string utility functions.
+        *   **Inputs**: None (as a class).
+        *   **Outputs/Side Effects**: Orchestrates the execution of individual test cases, reporting successes and failures.
+    *   **Test Methods (e.g., `test_reverse_string_empty`, `test_count_vowels_mixed_case_vowels`, `test_count_letters_with_numbers`, `test_is_palindrome_with_spaces_and_punctuation`)**:
+        *   **Inputs**: Each method implicitly takes the `self` instance and calls one of the string utility functions with specific test data (strings, numbers, lists, None, etc.).
+        *   **Outputs/Side Effects**: Uses `self.assertEqual`, `self.assertTrue`, `self.assertFalse`, and `self.assertRaises` to verify the expected return values or exceptions from the utility functions, contributing to the overall test report.
 
-*   **`TestStringUtils` Class**:
-    *   **Purpose**: Inherits from `unittest.TestCase` to organize and run tests for `src.string_utils` functions.
-    *   **Inputs**: None (as a class).
-    *   **Outputs/Side Effects**: Contains numerous test methods (`test_*`) that execute the utility functions with specific inputs and use `self.assertEqual`, `self.assertTrue`, `self.assertFalse`, or `self.assertRaises` to verify their expected behavior.
-*   **Test Methods (e.g., `test_reverse_string_empty`, `test_count_vowels_mixed_case_vowels`, `test_count_letters_non_string_input`, `test_is_palindrome_with_spaces_and_punctuation`)**:
-    *   **Purpose**: Each method tests a specific scenario or edge case for one of the `string_utils` functions.
-    *   **Inputs**: Strings (empty, single character, normal words, mixed case, with spaces/special characters/numbers) or non-string types (integers, lists, None, floats) to trigger `TypeError`.
-    *   **Outputs/Side Effects**: Assertions using `unittest.TestCase` methods to check returned values, boolean outcomes, or raised exceptions.
-
-### Dependencies:
-
-*   `unittest`: Python's built-in framework for organizing and running unit tests.
-*   `sys`: Used for modifying `sys.path` to enable module import and for program exit on import errors.
-*   `os`: Utilized for path manipulation (`os.path.abspath`, `os.path.join`, `os.path.dirname`) to correctly locate the `src` directory.
-*   `src.string_utils`: The module containing the `reverse_string`, `count_vowels`, `count_letters`, and `is_palindrome` functions that are being tested.
+3.  **Dependencies**:
+    *   `unittest`: Python's standard library for writing unit tests.
+    *   `sys`: Used for system-specific parameters and functions, primarily for modifying the Python import path.
+    *   `os`: Provides a way of using operating system dependent functionality, used here for path manipulation.
+    *   `src.string_utils`: The module containing the `reverse_string`, `count_vowels`, `count_letters`, and `is_palindrome` functions that are being tested.
+```
 
 ---
 
@@ -489,35 +458,39 @@ This file is a unit test suite (`TestStringUtils`) for a Python module `src.stri
 ## `tests/test_utils.py`
 
 ```markdown
-## File Analysis: tests/test_utils.py
+## Analysis of `tests/test_utils.py`
 
-### 1. Purpose
-This file contains unit tests for the `is_even_or_odd` function, which is expected to reside in `src/utils.py`. It ensures the function correctly identifies numbers as "Even", "Odd", or "Neither Even Nor Odd" and handles various input types.
+1.  **Purpose**:
+    This file provides a comprehensive suite of unit tests for the `is_even_or_odd` function, located in `src/utils.py`, to ensure its correct functionality across various numeric inputs and proper error handling for invalid types.
 
-### 2. Key Components
+2.  **Key Components**:
 
-*   **Path Setup and Module Import**:
-    *   **Description**: Dynamically adds the project root to `sys.path` to enable importing modules from the `src` directory. It then attempts to import `is_even_or_odd` from `src.utils`.
-    *   **Inputs**: `__file__` (current file path), `sys.path`.
-    *   **Outputs/Side Effects**: Modifies `sys.path`; `is_even_or_odd` variable is set to the imported function or `None` if the import fails.
-*   **`TestIsEvenOrOdd` Class**:
-    *   **Description**: A test suite inheriting from `unittest.TestCase` that encapsulates all tests for the `is_even_or_odd` function. Each test method is decorated with `@unittest.skipUnless` to skip execution if `is_even_or_odd` could not be imported.
-    *   **Inputs**: N/A (as a class).
-    *   **Outputs/Side Effects**: N/A (as a class).
-    *   **Test Methods (e.g., `test_positive_even_integer`, `test_zero`, `test_non_integer_float_positive`, `test_non_numeric_input_raises_type_error`)**:
-        *   **Description**: Individual test cases that call `is_even_or_odd` with specific inputs and use `self.assertEqual` or `self.assertRaises` to verify its behavior and outputs.
-        *   **Inputs**: Various integers, floating-point numbers (including exact and non-exact), very large numbers, and non-numeric types (strings, lists, None, dicts).
-        *   **Outputs/Side Effects**: Asserts that `is_even_or_odd` returns expected string values ("Even", "Odd", "Neither Even Nor Odd") or raises a `TypeError` for invalid input types.
-*   **`if __name__ == '__main__':` Block**:
-    *   **Description**: Standard Python idiom to run the tests when the script is executed directly.
-    *   **Inputs**: None.
-    *   **Outputs/Side Effects**: Executes all tests within `TestIsEvenOrOdd` and reports the results to the console.
+    *   **Path Manipulation & Conditional Import Block**:
+        *   **Description**: Dynamically adds the project root to `sys.path` to enable module imports from the `src` directory. It then attempts to import the `is_even_or_odd` function; if the import fails for any reason, the function reference is set to `None`.
+        *   **Inputs**: The current file's location, system path (`sys.path`).
+        *   **Outputs/Side Effects**: Modifies `sys.path`, globally sets `is_even_or_odd` to the imported function or `None`.
 
-### 3. Dependencies
-*   `unittest`
-*   `os`
-*   `sys`
-*   `src.utils` (specifically the `is_even_or_odd` function)
+    *   **`TestIsEvenOrOdd` Class**:
+        *   **Description**: A `unittest.TestCase` subclass that encapsulates all test methods for the `is_even_or_odd` function.
+        *   **Inputs**: Inherits from `unittest.TestCase`.
+        *   **Outputs/Side Effects**: Provides a testing context for the `is_even_or_odd` function.
+
+    *   **Test Methods (e.g., `test_positive_even_integer`, `test_zero`, `test_non_numeric_input_raises_type_error`)**:
+        *   **Description**: Individual test cases, each decorated with `@unittest.skipUnless(is_even_or_odd, ...)`, ensuring they are skipped if `is_even_or_odd` could not be imported. These methods call `is_even_or_odd` with specific inputs and use `self.assertEqual` or `self.assertRaises` to verify the expected output or error behavior.
+        *   **Inputs**: Various numerical (integers, floats, zero, large numbers) and non-numerical (strings, lists, None) inputs passed to `is_even_or_odd`.
+        *   **Outputs/Side Effects**: Asserts the function's return values (e.g., "Even", "Odd", "Neither Even Nor Odd") or that a `TypeError` is raised for invalid input.
+
+    *   **`if __name__ == '__main__'` Block**:
+        *   **Description**: Allows the tests to be run directly when the script is executed.
+        *   **Inputs**: None.
+        *   **Outputs/Side Effects**: Initiates the test discovery and execution via `unittest.main()`.
+
+3.  **Dependencies**:
+
+    *   `unittest`: Python's standard library for unit testing.
+    *   `os`: Used for operating system dependent functionality, specifically path manipulation.
+    *   `sys`: Used for interacting with the Python interpreter, specifically modifying `sys.path`.
+    *   `src.utils.is_even_or_odd`: The external function being tested (imported conditionally).
 ```
 
 ---
