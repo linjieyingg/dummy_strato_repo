@@ -1,6 +1,7 @@
 import argparse
 from src.operations import add as operations_add
 from src.bmi_calculator import calculate_bmi
+from src.grade_calculator import calculate_letter_grade # New import
 
 def add_command(args):
     """
@@ -39,10 +40,28 @@ def bmi_command(args):
         # Catch any other unexpected errors during BMI calculation
         print(f"An unexpected error occurred during BMI calculation: {e}")
 
+def grade_command(args):
+    """
+    Handles the 'grade' command, calculating the letter grade for a given score.
+    It takes a float argument 'score', calls the grade_calculator.calculate_letter_grade
+    function, and prints the result. Includes error handling for calculation.
+    """
+    try:
+        letter_grade = calculate_letter_grade(args.score)
+        print(f"Score {args.score} corresponds to grade: {letter_grade}")
+    except ValueError as e:
+        print(f"Error calculating grade: {e}")
+    except TypeError as e:
+        # Catches errors related to incorrect input types (should be handled by argparse `type=float`,
+        # but kept for robustness if `calculate_letter_grade` has internal type checks).
+        print(f"Error: Invalid argument type provided to grade calculation. {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred during grade calculation: {e}")
+
 def main():
     """
     Main function to parse command-line arguments and execute calculator operations.
-    It sets up an argparse CLI with subparsers for 'add' and 'bmi' commands.
+    It sets up an argparse CLI with subparsers for 'add', 'bmi', and 'grade' commands.
     """
     parser = argparse.ArgumentParser(
         description="A simple command-line calculator for various operations."
@@ -85,6 +104,18 @@ def main():
         help="Height in meters (e.g., 1.75)."
     )
     bmi_parser.set_defaults(func=bmi_command)
+
+    # --- Add 'grade' command subparser ---
+    grade_parser = subparsers.add_parser(
+        "grade",
+        help="Calculate a letter grade based on a numeric score."
+    )
+    grade_parser.add_argument(
+        "score",
+        type=float,
+        help="The numeric score (e.g., 85.5) to convert to a letter grade."
+    )
+    grade_parser.set_defaults(func=grade_command)
 
     args = parser.parse_args()
 
