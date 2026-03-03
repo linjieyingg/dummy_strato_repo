@@ -1,5 +1,6 @@
 import argparse
 from src.operations import add as operations_add
+from src.bmi_calculator import calculate_bmi
 
 def add_command(args):
     """
@@ -18,10 +19,30 @@ def add_command(args):
         # Catch any other unexpected errors from the add operation
         print(f"An unexpected error occurred during the add operation: {e}")
 
+def bmi_command(args):
+    """
+    Handles the 'bmi' command, calculating the Body Mass Index (BMI).
+    It takes weight in kilograms and height in meters, calls the bmi_calculator.calculate_bmi
+    function, and prints the result. Includes error handling for calculation.
+    """
+    try:
+        bmi_value = calculate_bmi(args.weight, args.height)
+        print(f"Your BMI: {bmi_value:.2f}")
+    except ValueError as e:
+        # Catches errors related to invalid input values (e.g., non-positive weight/height)
+        print(f"Error calculating BMI: {e}")
+    except TypeError as e:
+        # Catches errors related to incorrect input types (should be handled by argparse `type=float`,
+        # but kept for robustness if `calculate_bmi` has internal type checks).
+        print(f"Error: Invalid argument type provided to BMI calculation. {e}")
+    except Exception as e:
+        # Catch any other unexpected errors during BMI calculation
+        print(f"An unexpected error occurred during BMI calculation: {e}")
+
 def main():
     """
     Main function to parse command-line arguments and execute calculator operations.
-    It sets up an argparse CLI with a subparser for the 'add' command.
+    It sets up an argparse CLI with subparsers for 'add' and 'bmi' commands.
     """
     parser = argparse.ArgumentParser(
         description="A simple command-line calculator for various operations."
@@ -46,12 +67,24 @@ def main():
     )
     add_parser.set_defaults(func=add_command)
 
-    # --- Other commands would go here ---
-    # Example:
-    # subtract_parser = subparsers.add_parser("subtract", help="Subtract two numbers")
-    # subtract_parser.add_argument("num1", type=float, help="The first number")
-    # subtract_parser.add_argument("num2", type=float, help="The second number")
-    # subtract_parser.set_defaults(func=subtract_command)
+    # --- Add 'bmi' command subparser ---
+    bmi_parser = subparsers.add_parser(
+        "bmi",
+        help="Calculate Body Mass Index (BMI)."
+    )
+    bmi_parser.add_argument(
+        "--weight",
+        type=float,
+        required=True,
+        help="Weight in kilograms (e.g., 70.5)."
+    )
+    bmi_parser.add_argument(
+        "--height",
+        type=float,
+        required=True,
+        help="Height in meters (e.g., 1.75)."
+    )
+    bmi_parser.set_defaults(func=bmi_command)
 
     args = parser.parse_args()
 
