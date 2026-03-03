@@ -145,6 +145,31 @@ Calculates the difference between two numbers (number1 - number2). Both numbers 
     _update_readme_section(readme_file_path, functions_section_header, subtract_function_entry_markdown, entry_title_prefix="###")
 
 
+def update_readme_for_multiply_function():
+    """
+    Updates or creates the README.md file to include documentation for the 'multiply' function
+    under the 'Functions' section.
+
+    If 'README.md' exists, it attempts to find the 'Functions' section and insert
+    the 'multiply' function details. If the 'Functions' section does not exist, it will
+    be added to the end of the file. If 'README.md' does not exist, it will be
+    created with a basic structure including the 'multiply' function documentation.
+    """
+    readme_file_path = "README.md"
+    functions_section_header = "## Functions"
+    multiply_function_entry_markdown = """
+### multiply
+
+**Syntax:** `multiply(number1, number2)`
+
+**Description:**
+Multiplies two numbers (number1 * number2). Both numbers should be integers or floats.
+
+**Example Usage:**
+"""
+    _update_readme_section(readme_file_path, functions_section_header, multiply_function_entry_markdown, entry_title_prefix="###")
+
+
 def update_readme_for_is_even_or_odd_function():
     """
     Updates or creates the README.md file to include documentation for the 'is_even_or_odd' function
@@ -216,3 +241,5 @@ def update_readme_for_reverse_string_function():
 Reverses a given string `s`.
 
 **Example Usage:**
+"""
+    _update_readme_section(readme_file_path, functions_section_header, reverse_string_entry_markdown, entry_title_prefix="###")
