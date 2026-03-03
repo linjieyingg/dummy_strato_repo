@@ -9,276 +9,473 @@
 
 **Files Analyzed:** 18
 
-**Last Updated:** 2026-03-03 16:42:43
+**Last Updated:** 2026-03-03 16:46:39
 
 ---
 
 
 ## `main.py`
 
-_(Error during summarization for main.py: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
-domain: "googleapis.com"
-metadata {
-  key: "service"
-  value: "generativelanguage.googleapis.com"
-}
-, locale: "en-US"
-message: "API key not valid. Please pass a valid API key."
-])_
+This file implements a command-line interface (CLI) for a simple calculator application, currently supporting an addition operation. It uses `argparse` to handle command-line arguments and dispatches to specific functions for each command.
+
+### Key Components
+
+*   **`add_command(args)`**:
+    *   **Inputs**: `args` (an `argparse.Namespace` object containing `num1` and `num2` as float attributes).
+    *   **Outputs or Side Effects**: Calls an external `operations_add` function with `num1` and `num2`, then prints the calculated sum to standard output. It includes error handling to catch and report issues during the addition operation.
+*   **`main()`**:
+    *   **Inputs**: None (implicitly processes command-line arguments).
+    *   **Outputs or Side Effects**: Configures the `argparse` CLI, defines subparsers for commands (currently 'add'), parses the provided command-line arguments, and invokes the appropriate command handler function (e.g., `add_command`). If no command is given, it prints the help message.
+
+### Dependencies
+
+*   `argparse`: A standard Python library used for parsing command-line arguments.
+*   `src.operations`: A local module from which the `add` function (aliased as `operations_add`) is imported, providing the core arithmetic logic.
 
 ---
 
 
 ## `math_operations.py`
 
-_(Error during summarization for math_operations.py: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
-domain: "googleapis.com"
-metadata {
-  key: "service"
-  value: "generativelanguage.googleapis.com"
-}
-, locale: "en-US"
-message: "API key not valid. Please pass a valid API key."
-])_
+```markdown
+1.  **Purpose**: This Python file provides a single utility function for performing subtraction between two numbers, ensuring robust type checking for its inputs. It also includes example usage and basic error handling tests.
+
+2.  **Key Components**:
+    *   **`subtract(minuend, subtrahend)` function**:
+        *   **Inputs**: `minuend` (int or float) and `subtrahend` (int or float).
+        *   **Outputs/Side Effects**: Returns the arithmetic difference (`minuend - subtrahend`) as an `int` or `float`. It raises a `TypeError` if either input is not an `int` or `float`.
+    *   **`if __name__ == "__main__":` block**:
+        *   **Inputs**: Calls the `subtract` function with various valid numeric arguments and intentionally invalid types to demonstrate error handling.
+        *   **Outputs/Side Effects**: Prints the results of the `subtract` function calls and any caught `TypeError` messages to the console.
+
+3.  **Dependencies**: None. This file uses only standard Python built-in types and functions.
+```
 
 ---
 
 
 ## `scripts/generate_tests_ci.py`
 
-_(Error during summarization for scripts/generate_tests_ci.py: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
-domain: "googleapis.com"
-metadata {
-  key: "service"
-  value: "generativelanguage.googleapis.com"
-}
-, locale: "en-US"
-message: "API key not valid. Please pass a valid API key."
-])_
+This CI script detects Python files changed in the last Git commit within specified source directories, then uses the Google Gemini API to generate `pytest` unit tests for these files, saving them to a `tests/` directory.
+
+### Key Components:
+
+*   **`get_changed_files()`**
+    *   **Input**: None (implicitly uses `git` history).
+    *   **Output/Side Effect**: Returns a list of strings, each representing the path of a changed Python file (excluding `__init__.py`) in the `SOURCE_DIRS`.
+*   **`get_test_path(source_path: str)`**
+    *   **Input**: A string representing the path to a source Python file (e.g., `src/module/file.py`).
+    *   **Output/Side Effect**: Returns a `pathlib.Path` object for the corresponding test file (e.g., `tests/test_file.py`).
+*   **`generate_tests(file_path: str, source_code: str)`**
+    *   **Input**: The path to the source file as a string and its content as a string.
+    *   **Output/Side Effect**: Returns a string containing the generated `pytest` code, or `None` if test generation fails after multiple retries (including handling Gemini API rate limits). It interacts with the Gemini API to get the test code.
+*   **`main()`**
+    *   **Input**: None.
+    *   **Output/Side Effect**: Orchestrates the process: gets changed files, iterates through them, reads source code, calls `generate_tests`, and writes the resulting tests to the `tests/` directory. Prints status and error messages.
+
+### Dependencies:
+
+*   **Python Standard Library**: `os`, `subprocess`, `re`, `time`, `random`, `pathlib.Path`.
+*   **External Libraries**: `google.generativeai`.
+*   **Environment Variables**: `GEMINI_API_KEY`.
+*   **External Tools**: `git` command-line tool.
 
 ---
 
 
 ## `src/calculator.py`
 
-_(Error during summarization for src/calculator.py: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
-domain: "googleapis.com"
-metadata {
-  key: "service"
-  value: "generativelanguage.googleapis.com"
-}
-, locale: "en-US"
-message: "API key not valid. Please pass a valid API key."
-])_
+```markdown
+## src/calculator.py Summary
+
+### Purpose
+This file provides a fundamental utility function for performing numerical multiplication. It serves as a core mathematical operation component, likely within a broader calculator application.
+
+### Key Components
+*   **Function: `multiply(num1: float, num2: float)`**
+    *   **Inputs**: Takes two arguments, `num1` and `num2`, both type-hinted as `float`. The docstring clarifies they can be floating-point numbers or integers.
+    *   **Outputs**: Returns the product of `num1` and `num2` as a `float`. It has no side effects.
+
+### Dependencies
+This file has no explicit external dependencies or imports; it relies solely on Python's built-in arithmetic operations.
+```
 
 ---
 
 
 ## `src/commands/round_cmd.py`
 
-_(Error during summarization for src/commands/round_cmd.py: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
-domain: "googleapis.com"
-metadata {
-  key: "service"
-  value: "generativelanguage.googleapis.com"
-}
-, locale: "en-US"
-message: "API key not valid. Please pass a valid API key."
-])_
+```markdown
+## File Analysis: `src/commands/round_cmd.py`
+
+### 1. Purpose
+This file implements a command-line utility for rounding a given floating-point number to a specified decimal place. If no decimal place is provided, it defaults to rounding to the nearest integer.
+
+### 2. Key Components
+*   **`run(args: list)` function**:
+    *   **Inputs**: `args` - A list of strings, where `args[0]` is the number to be rounded and an optional `args[1]` is the integer specifying the decimal place.
+    *   **Outputs or Side Effects**: Prints the original and rounded number to standard output upon success. Prints error messages to standard output and exits the program with `sys.exit(1)` if arguments are missing, invalid, or too many are provided, or if the decimal place is negative.
+*   **`if __name__ == "__main__":` block**:
+    *   **Inputs**: None directly, but it provides various hardcoded test cases for the `run` function.
+    *   **Outputs or Side Effects**: Executes and demonstrates the `run` function's behavior with both valid inputs and error conditions, printing the results of each test case to standard output.
+
+### 3. Dependencies
+*   `sys`: Used for exiting the program (`sys.exit`) on error.
+*   `src.utils.math_utils.round_number_to_place`: An internal utility function responsible for performing the actual rounding logic.
+```
 
 ---
 
 
 ## `src/number_utils.py`
 
-_(Error during summarization for src/number_utils.py: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
-domain: "googleapis.com"
-metadata {
-  key: "service"
-  value: "generativelanguage.googleapis.com"
-}
-, locale: "en-US"
-message: "API key not valid. Please pass a valid API key."
-])_
+```markdown
+## File Analysis: src/number_utils.py
+
+### 1. Purpose
+This file provides a utility function to determine the parity (even or odd) of a given number, specifically handling integers and float equivalents of integers while rejecting non-integer floats.
+
+### 2. Key Components
+*   **Function: `is_even_or_odd(num)`**
+    *   **Inputs**: `num` (an `int` or `float`).
+    *   **Outputs or Side Effects**:
+        *   Returns a `str` ("even" or "odd") indicating the number's parity.
+        *   Raises `TypeError` if `num` is not an instance of `int` or `float`.
+        *   Raises `ValueError` if `num` is a `float` with a non-zero fractional part (e.g., 4.5), as parity is only defined for integers.
+
+### 3. Dependencies
+*   `numbers`: Used for type checking (`isinstance(num, numbers.Number)`).
+```
 
 ---
 
 
 ## `src/operations.py`
 
-_(Error during summarization for src/operations.py: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
-domain: "googleapis.com"
-metadata {
-  key: "service"
-  value: "generativelanguage.googleapis.com"
-}
-, locale: "en-US"
-message: "API key not valid. Please pass a valid API key."
-])_
+```markdown
+This file defines a module for basic arithmetic operations. Its primary purpose is to provide a robust function for adding two numbers while performing type validation.
+
+### Key Components:
+*   **Function**: `add(a, b)`
+    *   **Inputs**: `a` (an integer or float), `b` (an integer or float).
+    *   **Outputs/Side Effects**: Returns the sum of `a` and `b` as an integer or float. It raises a `TypeError` if either input `a` or `b` is not an integer or a float.
+
+### Dependencies:
+This file has no explicit external dependencies or `import` statements, relying solely on Python's built-in types and functions.
+```
 
 ---
 
 
 ## `src/string_utils.py`
 
-_(Error during summarization for src/string_utils.py: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
-domain: "googleapis.com"
-metadata {
-  key: "service"
-  value: "generativelanguage.googleapis.com"
-}
-, locale: "en-US"
-message: "API key not valid. Please pass a valid API key."
-])_
+This Python file, `string_utils.py`, provides a collection of utility functions for common string manipulation and analysis tasks. It offers robust functions to check string properties, count characters, format text, and compare strings.
+
+### Key Components
+
+*   **`is_palindrome(text: str) -> bool`**
+    *   **Inputs**: A string `text`.
+    *   **Outputs**: `True` if `text` is a palindrome (ignoring capitalization, spaces, and punctuation), `False` otherwise. Raises `TypeError` if input is not a string.
+*   **`count_vowels(s: str) -> int`**
+    *   **Inputs**: A string `s`.
+    *   **Outputs**: The number of vowels (a, e, i, o, u, case-insensitive) in `s`. Raises `TypeError` if input is not a string.
+*   **`capitalize_words(s: str) -> str`**
+    *   **Inputs**: A string `s`.
+    *   **Outputs**: A new string with the first letter of each word capitalized. Raises `TypeError` if input is not a string.
+*   **`is_anagram(s1: str, s2: str) -> bool`**
+    *   **Inputs**: Two strings `s1` and `s2`.
+    *   **Outputs**: `True` if `s1` and `s2` are anagrams (ignoring capitalization, spaces, and punctuation), `False` otherwise. Raises `TypeError` if inputs are not strings.
+*   **`remove_spaces(s: str) -> str`**
+    *   **Inputs**: A string `s`.
+    *   **Outputs**: A new string with all space characters removed. Raises `TypeError` if input is not a string.
+*   **`find_longest_word(s: str) -> str`**
+    *   **Inputs**: A string `s`.
+    *   **Outputs**: The longest word in `s`, or an empty string if no words are found. If multiple words have the same longest length, the first one encountered is returned. Raises `TypeError` if input is not a string.
+
+### Dependencies
+
+*   `string`: This module is imported but not explicitly used in any of the provided functions.
 
 ---
 
 
 ## `src/utils.py`
 
-_(Error during summarization for src/utils.py: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
-domain: "googleapis.com"
-metadata {
-  key: "service"
-  value: "generativelanguage.googleapis.com"
-}
-, locale: "en-US"
-message: "API key not valid. Please pass a valid API key."
-])_
+### File Summary: `src/utils.py`
+
+1.  **Purpose**:
+    This file contains general utility functions, with the primary function designed to check if a given string is a palindrome while ignoring case and non-alphanumeric characters.
+
+2.  **Key Components**:
+    *   **`is_palindrome(text: str) -> bool`**:
+        *   **Inputs**: Takes a single argument `text`, which is expected to be a string.
+        *   **Outputs or Side Effects**: Returns `True` if the processed string is a palindrome, and `False` otherwise. It raises a `TypeError` if the input `text` is not a string.
+
+3.  **Dependencies**:
+    *   `re`: Used for regular expression operations to clean the input string by removing non-alphanumeric characters.
 
 ---
 
 
 ## `src/utils/math_utils.py`
 
-_(Error during summarization for src/utils/math_utils.py: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
-domain: "googleapis.com"
-metadata {
-  key: "service"
-  value: "generativelanguage.googleapis.com"
-}
-, locale: "en-US"
-message: "API key not valid. Please pass a valid API key."
-])_
+**Purpose**:
+This Python utility file provides a function to round numbers to specific named place values, such as 'tens', 'hundredths', or 'thousands', using a human-readable string identifier.
+
+**Key Components**:
+
+*   **`_ROUNDING_PLACES` (Global Dictionary)**:
+    *   A constant dictionary mapping human-readable string names for place values (e.g., 'ones', 'tens', 'tenths') to their corresponding `ndigits` integer argument for the built-in `round()` function.
+*   **`round_number_to_place(number, place)` (Function)**:
+    *   **Inputs**: `number` (`int` or `float`) to be rounded, and `place` (`str`) indicating the desired rounding precision (e.g., 'tens', 'hundredths').
+    *   **Outputs**: A `float` representing the `number` rounded to the specified `place`. It raises `TypeError` for incorrect input types or `ValueError` for an unrecognized `place` string.
+
+**Dependencies**:
+
+*   `math` (imported but not directly used by the provided function)
+*   `typing.Union`
 
 ---
 
 
 ## `src/utils/string_utils.py`
 
-_(Error during summarization for src/utils/string_utils.py: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
-domain: "googleapis.com"
-metadata {
-  key: "service"
-  value: "generativelanguage.googleapis.com"
-}
-, locale: "en-US"
-message: "API key not valid. Please pass a valid API key."
-])_
+This file, `string_utils.py`, provides a collection of utility functions for common string manipulation tasks. It includes functions for reversing strings, counting vowels, and counting alphabetic characters, all designed to be robust against non-string inputs.
+
+### Key Components:
+
+*   **`reverse_string(s: str) -> str`**:
+    *   **Inputs**: A string `s`.
+    *   **Outputs**: The input string `s` in reverse order. Raises `TypeError` if `s` is not a string.
+*   **`count_vowels(s: str) -> int`**:
+    *   **Inputs**: A string `s`.
+    *   **Outputs**: An integer representing the count of vowels (case-insensitive) in `s`. Raises `TypeError` if `s` is not a string.
+*   **`count_alphabetic_characters(s: str) -> int`**:
+    *   **Inputs**: A string `s`.
+    *   **Outputs**: An integer representing the count of alphabetic characters (a-z, A-Z) in `s`. Raises `TypeError` if `s` is not a string.
+*   **`if __name__ == "__main__":` block**:
+    *   **Inputs**: No direct inputs from the user; it uses hardcoded example strings.
+    *   **Outputs**: Prints demonstration of each function's usage and error handling for invalid input types to the console.
+
+### Dependencies:
+
+*   `collections`: Imported, but not utilized by any of the current functions within the file.
 
 ---
 
 
 ## `test_math_operations.py`
 
-_(Error during summarization for test_math_operations.py: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
-domain: "googleapis.com"
-metadata {
-  key: "service"
-  value: "generativelanguage.googleapis.com"
-}
-, locale: "en-US"
-message: "API key not valid. Please pass a valid API key."
-])_
+```markdown
+### Purpose
+This file provides a comprehensive suite of unit tests for the `subtract` function, ensuring its accurate operation across various numerical inputs, data types, and error handling for invalid inputs.
+
+### Key Components
+*   **`TestSubtractFunction` Class**:
+    *   **Inputs**: Inherits from `unittest.TestCase`, giving it access to assertion methods.
+    *   **Outputs/Side Effects**: Contains multiple test methods (`test_positive_numbers`, `test_negative_numbers`, `test_floating_point_numbers`, etc.) that execute the `subtract` function with predefined inputs and assert its output against expected values. It also tests for specific error types (`TypeError`) when invalid inputs are provided. The execution of this class's methods generates test reports indicating passes or failures.
+*   **Test Methods (e.g., `test_positive_numbers`, `test_invalid_input_types`)**:
+    *   **Inputs**: Each method calls the `subtract` function with specific numeric or non-numeric arguments.
+    *   **Outputs/Side Effects**: Uses `self.assertEqual`, `self.assertAlmostEqual`, and `self.assertRaises` to verify the `subtract` function's return value or error behavior. They do not return a value themselves but contribute to the overall test result (pass/fail).
+
+### Dependencies
+*   `unittest`: Python's standard library module for creating and running unit tests.
+*   `subtract`: A function imported from an external module named `math_operations`, which is the subject of these tests.
+```
 
 ---
 
 
 ## `tests/test_calculator.py`
 
-_(Error during summarization for tests/test_calculator.py: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
-domain: "googleapis.com"
-metadata {
-  key: "service"
-  value: "generativelanguage.googleapis.com"
-}
-, locale: "en-US"
-message: "API key not valid. Please pass a valid API key."
-])_
+This file contains a suite of unit tests for the `multiply` function imported from `src.calculator.py`, verifying its correct behavior across various numerical scenarios.
+
+### Key Components:
+
+*   **`test_multiply_integers()`**:
+    *   Inputs: Calls `multiply()` with two positive integer arguments.
+    *   Outputs: None, asserts that `multiply()` returns the correct product.
+*   **`test_multiply_floats()`**:
+    *   Inputs: Calls `multiply()` with two floating-point arguments.
+    *   Outputs: None, asserts that `multiply()` returns the correct product, using `pytest.approx` for floating-point comparisons.
+*   **`test_multiply_negative_numbers()`**:
+    *   Inputs: Calls `multiply()` with combinations of positive, negative, and floating-point arguments.
+    *   Outputs: None, asserts that `multiply()` correctly handles negative numbers.
+*   **`test_multiply_by_zero()`**:
+    *   Inputs: Calls `multiply()` with one or both operands being zero (integer or float).
+    *   Outputs: None, asserts that `multiply()` returns zero in these cases.
+*   **`test_multiply_large_numbers()`**:
+    *   Inputs: Calls `multiply()` with large integer arguments.
+    *   Outputs: None, asserts that `multiply()` correctly handles large integer multiplication.
+*   **`test_multiply_with_one()`**:
+    *   Inputs: Calls `multiply()` with one of the operands being 1 or -1 (integer or float).
+    *   Outputs: None, asserts that `multiply()` correctly applies the identity property of multiplication.
+
+### Dependencies:
+
+*   `pytest`: Used as the testing framework.
+*   `src.calculator.multiply`: The `multiply` function from the `src.calculator` module, which is the subject of these tests.
 
 ---
 
 
 ## `tests/test_math_utils.py`
 
-_(Error during summarization for tests/test_math_utils.py: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
-domain: "googleapis.com"
-metadata {
-  key: "service"
-  value: "generativelanguage.googleapis.com"
-}
-, locale: "en-US"
-message: "API key not valid. Please pass a valid API key."
-])_
+This file contains comprehensive unit tests for the `round_number_to_place` function, ensuring its correctness across various numerical inputs, rounding places, and edge cases including Python's round-half-to-even behavior and error handling.
+
+### Key Components
+
+*   **Class**: `TestRoundNumberToPlace(unittest.TestCase)`
+    *   **Purpose**: A test suite that groups all test methods for the `round_number_to_place` function.
+    *   **Methods**:
+        *   `test_positive_numbers()`: Verifies correct rounding of positive numbers to various decimal places.
+        *   `test_negative_numbers()`: Verifies correct rounding of negative numbers to various decimal places.
+        *   `test_round_half_to_even_behavior()`: Specifically tests cases ending in .5 (or equivalent) to confirm adherence to the "round half to even" rule.
+        *   `test_zero_and_no_rounding_needed()`: Checks rounding behavior for zero and numbers that do not require adjustment.
+        *   `test_different_positive_places()`: Tests with diverse positive integer `place` values.
+        *   `test_negative_place_values()`: Tests rounding to significant figures (tens, hundreds, etc.) using negative `place` values.
+        *   `test_invalid_number_input_type()`: Asserts that a `TypeError` is raised for non-numeric `number` inputs.
+        *   `test_invalid_place_input_type()`: Asserts that a `TypeError` is raised for non-integer `place` inputs.
+    *   **Inputs**: Each test method calls `round_number_to_place` with specific `number` (float/int) and `place` (int) arguments, along with invalid types for error tests.
+    *   **Outputs**: Uses `self.assertEqual()` to verify the function's return value against expected outcomes and `self.assertRaises()` to confirm correct error handling.
+*   **Path Manipulation**: `sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src', 'utils')))`
+    *   **Purpose**: Dynamically adds the `src/utils` directory to the Python path, allowing `math_utils` to be imported correctly regardless of where the test is run from.
+    *   **Inputs**: Uses `__file__`, `'..'`, `'src'`, `'utils'` as path components.
+    *   **Outputs/Side Effects**: Modifies `sys.path`.
+
+### Dependencies
+
+*   `unittest` (Python standard library)
+*   `sys` (Python standard library)
+*   `os` (Python standard library)
+*   `math_utils.round_number_to_place` (from a local project module, `src/utils/math_utils.py`)
 
 ---
 
 
 ## `tests/test_number_utils.py`
 
-_(Error during summarization for tests/test_number_utils.py: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
-domain: "googleapis.com"
-metadata {
-  key: "service"
-  value: "generativelanguage.googleapis.com"
-}
-, locale: "en-US"
-message: "API key not valid. Please pass a valid API key."
-])_
+```markdown
+### Purpose
+This file `tests/test_number_utils.py` is a unit test suite designed to verify the correctness and robustness of the `is_even_or_odd` function, which is expected to reside in the `src/number_utils.py` module.
+
+### Key Components
+
+*   **Path Modification and Module Import:**
+    *   **Inputs:** Current file's location (`__file__`).
+    *   **Outputs/Side Effects:** Adds the parent `src` directory to `sys.path` to enable importing `number_utils`. It then attempts to import `is_even_or_odd`, providing a fallback placeholder function that raises `NotImplementedError` if the import fails, along with a warning message.
+*   **`class TestNumberUtils(unittest.TestCase)`:**
+    *   **Inputs:** Inherits from `unittest.TestCase` to leverage its assertion methods.
+    *   **Outputs/Side Effects:** Contains a collection of test methods to validate the `is_even_or_odd` function.
+    *   **`test_even_numbers(self)`:**
+        *   **Inputs:** Various even integer values (e.g., `2`, `0`, `100`, `-4`).
+        *   **Outputs/Side Effects:** Asserts that `is_even_or_odd` returns "Even".
+    *   **`test_odd_numbers(self)`:**
+        *   **Inputs:** Various odd integer values (e.g., `1`, `7`, `-3`, `99`).
+        *   **Outputs/Side Effects:** Asserts that `is_even_or_odd` returns "Odd".
+    *   **`test_non_integer_inputs(self)`:**
+        *   **Inputs:** Non-integer values (e.g., `2.5`, `"hello"`, `[1, 2]`, `None`).
+        *   **Outputs/Side Effects:** Asserts that `is_even_or_odd` raises a `TypeError`.
+    *   **`test_large_numbers(self)`:**
+        *   **Inputs:** Large even and odd integer values, both positive and negative.
+        *   **Outputs/Side Effects:** Asserts that `is_even_or_odd` correctly identifies them as "Even" or "Odd".
+*   **`if __name__ == '__main__': unittest.main()`:**
+    *   **Inputs:** None.
+    *   **Outputs/Side Effects:** Executes all defined test cases when the script is run directly.
+
+### Dependencies
+*   `unittest` (Python standard library for unit testing)
+*   `sys` (Python standard library for system-specific parameters and functions, used for path manipulation)
+*   `os` (Python standard library for interacting with the operating system, used for path manipulation)
+*   `src.number_utils` (an external module expected to be in a `src` directory relative to the test file, specifically relying on its `is_even_or_odd` function)
+```
 
 ---
 
 
 ## `tests/test_operations.py`
 
-_(Error during summarization for tests/test_operations.py: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
-domain: "googleapis.com"
-metadata {
-  key: "service"
-  value: "generativelanguage.googleapis.com"
-}
-, locale: "en-US"
-message: "API key not valid. Please pass a valid API key."
-])_
+This file, `tests/test_operations.py`, provides a comprehensive suite of unit tests for the `add` function located in the `src/operations.py` module, ensuring its correctness across various numerical scenarios and proper error handling for invalid inputs.
+
+### Key Components:
+
+*   **`sys.path.insert` and `import operations`**:
+    *   **Inputs**: `sys` module for path manipulation, `os` module for path construction.
+    *   **Outputs/Side Effects**: Modifies the Python system path to allow importing the `operations` module from a relative `src` directory.
+*   **`TestOperations` Class**:
+    *   Inherits from `unittest.TestCase`.
+    *   **Inputs**: None (instantiated by the `unittest` framework).
+    *   **Outputs/Side Effects**: Contains numerous test methods designed to verify the `operations.add` function.
+*   **Test Methods (e.g., `test_add_positive_integers`, `test_add_floats`, `test_add_non_numeric_input`)**:
+    *   **Inputs**: Each method calls `operations.add` with specific arguments (e.g., integers, floats, mixed types, non-numeric types).
+    *   **Outputs/Side Effects**: Uses `self.assertEqual`, `self.assertAlmostEqual`, or `self.assertRaises` to assert that `operations.add` returns the expected value or raises a `TypeError` for invalid inputs.
+*   **`if __name__ == '__main__': unittest.main()`**:
+    *   **Inputs**: None.
+    *   **Outputs/Side Effects**: Runs all tests defined in the `TestOperations` class when the script is executed directly.
+
+### Dependencies:
+
+*   `unittest` (Python standard library)
+*   `sys` (Python standard library)
+*   `os` (Python standard library)
+*   `operations` (a local module expected in `../src/operations.py`)
 
 ---
 
 
 ## `tests/test_string_utils.py`
 
-_(Error during summarization for tests/test_string_utils.py: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
-domain: "googleapis.com"
-metadata {
-  key: "service"
-  value: "generativelanguage.googleapis.com"
-}
-, locale: "en-US"
-message: "API key not valid. Please pass a valid API key."
-])_
+This file contains a comprehensive unit test suite for a set of string utility functions (`reverse_string`, `count_vowels`, `count_letters`, `is_palindrome`) defined in `src/string_utils.py`. It ensures these functions behave correctly across various inputs, including empty strings, special characters, mixed cases, and handles non-string inputs by raising `TypeError`.
+
+**Key Components**:
+
+*   **Path Modification & Import**:
+    *   **Inputs**: `sys`, `os` modules.
+    *   **Outputs**: Modifies `sys.path` to include the parent directory's `src` folder, then attempts to import `reverse_string`, `count_vowels`, `count_letters`, and `is_palindrome` from `src.string_utils`. Exits with an error if import fails.
+*   **`TestStringUtils` class**:
+    *   **Inputs**: Inherits from `unittest.TestCase`. Each test method (e.g., `test_reverse_string_empty`, `test_count_vowels_no_vowels`, `test_is_palindrome_with_spaces_and_punctuation`) takes `self` and calls one of the imported utility functions with specific test data.
+    *   **Outputs**: Uses `self.assertEqual`, `self.assertTrue`, `self.assertFalse`, and `self.assertRaises` to assert the expected return values or error types for the utility functions.
+*   **`if __name__ == '__main__':` block**:
+    *   **Inputs**: None directly, but typically executed when the script is run.
+    *   **Outputs**: Runs all tests defined in `TestStringUtils` using `unittest.main()`.
+
+**Dependencies**:
+
+*   `unittest`: For creating and running test cases.
+*   `sys`: For manipulating Python's import path and exiting on import errors.
+*   `os`: For path manipulation to locate the `src` directory.
+*   `src.string_utils`: The module containing the functions under test (`reverse_string`, `count_vowels`, `count_letters`, `is_palindrome`).
 
 ---
 
 
 ## `tests/test_utils.py`
 
-_(Error during summarization for tests/test_utils.py: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
-domain: "googleapis.com"
-metadata {
-  key: "service"
-  value: "generativelanguage.googleapis.com"
-}
-, locale: "en-US"
-message: "API key not valid. Please pass a valid API key."
-])_
+This file contains unit tests for an `is_even_or_odd` function, which is expected to be found in `src/utils.py`. It ensures the function correctly identifies even, odd, and non-integer numbers, and handles invalid input types.
+
+### Key Components:
+
+*   **`sys.path` modification**: Adds the project root directory to `sys.path` to enable importing modules from the `src` directory.
+    *   Inputs: Current file path.
+    *   Outputs/Side Effects: Modifies `sys.path` to include the project root.
+*   **Conditional Import**: Attempts to import `is_even_or_odd` from `src.utils`. If the import fails (e.g., file not found, function missing), the function is set to `None`.
+    *   Inputs: Implicitly attempts to load `src/utils.py`.
+    *   Outputs/Side Effects: `is_even_or_odd` variable holds the function reference or `None`.
+*   **`TestIsEvenOrOdd` class**: A `unittest.TestCase` subclass containing various test methods for the `is_even_or_odd` function.
+    *   Inputs: None directly, operates on the imported `is_even_or_odd` function.
+    *   Outputs/Side Effects: Runs a suite of assertions to verify the correctness of `is_even_or_odd`.
+*   **Test Methods (e.g., `test_positive_even_integer`, `test_zero`, `test_non_numeric_input_raises_type_error`)**: Each method tests `is_even_or_odd` with specific input values (positive/negative integers, zero, floats, non-numeric types).
+    *   Inputs: Numeric values (integers, floats) and non-numeric types (strings, lists, None, dicts).
+    *   Outputs/Side Effects: Asserts expected return values (e.g., "Even", "Odd", "Neither Even Nor Odd") or that a `TypeError` is raised for invalid inputs. All tests are skipped if `is_even_or_odd` was not successfully imported.
+*   **`if __name__ == '__main__':` block**: Standard Python entry point to run all tests defined in the `TestIsEvenOrOdd` class.
+    *   Inputs: None.
+    *   Outputs/Side Effects: Executes the unit test suite.
+
+### Dependencies:
+
+*   `unittest` (standard library for unit testing)
+*   `os` (standard library for operating system interaction, specifically path manipulation)
+*   `sys` (standard library for system-specific parameters and functions, specifically `sys.path` modification)
+*   `src.utils.is_even_or_odd` (the function under test, expected to be defined in `src/utils.py`)
 
 ---
