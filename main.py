@@ -1,7 +1,8 @@
 import argparse
 from src.operations import add as operations_add
+from src.operations import divide as operations_divide # New import
 from src.bmi_calculator import calculate_bmi
-from src.grade_calculator import calculate_letter_grade # New import
+from src.grade_calculator import calculate_letter_grade
 
 def add_command(args):
     """
@@ -19,6 +20,26 @@ def add_command(args):
     except Exception as e:
         # Catch any other unexpected errors from the add operation
         print(f"An unexpected error occurred during the add operation: {e}")
+
+def divide_command(args):
+    """
+    Handles the 'divide' command, calculating the quotient of two numbers.
+    It takes two float arguments, num1 (numerator) and num2 (denominator),
+    calls the operations.divide function, and prints the result.
+    Includes error handling for zero division and other potential issues.
+    """
+    try:
+        result = operations_divide(args.num1, args.num2)
+        print(f"Result: {result}")
+    except ZeroDivisionError as e:
+        print(f"Error: {e}")
+    except TypeError as e:
+        # This catch might be redundant if argparse types are strict,
+        # but good for robustness if operations.divide expects specific types.
+        print(f"Error: Invalid argument type provided to divide operation. {e}")
+    except Exception as e:
+        # Catch any other unexpected errors from the divide operation
+        print(f"An unexpected error occurred during the divide operation: {e}")
 
 def bmi_command(args):
     """
@@ -61,7 +82,7 @@ def grade_command(args):
 def main():
     """
     Main function to parse command-line arguments and execute calculator operations.
-    It sets up an argparse CLI with subparsers for 'add', 'bmi', and 'grade' commands.
+    It sets up an argparse CLI with subparsers for 'add', 'divide', 'bmi', and 'grade' commands.
     """
     parser = argparse.ArgumentParser(
         description="A simple command-line calculator for various operations."
@@ -85,6 +106,23 @@ def main():
         help="The second number to add."
     )
     add_parser.set_defaults(func=add_command)
+
+    # --- Add 'divide' command subparser ---
+    divide_parser = subparsers.add_parser(
+        "divide",
+        help="Divide two numbers (numerator / denominator)."
+    )
+    divide_parser.add_argument(
+        "num1",
+        type=float,
+        help="The numerator."
+    )
+    divide_parser.add_argument(
+        "num2",
+        type=float,
+        help="The denominator (cannot be zero)."
+    )
+    divide_parser.set_defaults(func=divide_command)
 
     # --- Add 'bmi' command subparser ---
     bmi_parser = subparsers.add_parser(
