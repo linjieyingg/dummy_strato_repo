@@ -1,6 +1,7 @@
 import unittest
 import sys
 import os
+import pytest
 
 # Add the 'src' directory to the Python path to enable importing 'operations'
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
@@ -95,6 +96,84 @@ class TestOperations(unittest.TestCase):
             operations.add(5, None)
         with self.assertRaises(TypeError):
             operations.add({"a": 1}, {"b": 2})
+
+# Pytest style tests for the 'divide' function
+def test_divide_positive_numbers():
+    """
+    Test 'divide' with two positive numbers.
+    """
+    assert operations.divide(6, 2) == 3
+    assert operations.divide(100, 10) == 10
+    assert operations.divide(7, 1) == 7
+
+def test_divide_negative_numbers():
+    """
+    Test 'divide' with two negative numbers.
+    """
+    assert operations.divide(-6, -2) == 3
+    assert operations.divide(-10, -5) == 2
+
+def test_divide_mixed_signs():
+    """
+    Test 'divide' with mixed positive and negative numbers.
+    """
+    assert operations.divide(-6, 2) == -3
+    assert operations.divide(10, -5) == -2
+    assert operations.divide(8, -4) == -2
+
+def test_divide_floats():
+    """
+    Test 'divide' with floating-point numbers, using pytest.approx for precision.
+    """
+    assert operations.divide(7.5, 2.5) == pytest.approx(3.0)
+    assert operations.divide(0.3, 0.1) == pytest.approx(3.0)
+    assert operations.divide(1.0, 3.0) == pytest.approx(1/3.0)
+    assert operations.divide(10.0, 4.0) == pytest.approx(2.5)
+    assert operations.divide(-5.0, 2.0) == pytest.approx(-2.5)
+
+def test_divide_zero_numerator():
+    """
+    Test 'divide' when the numerator is zero.
+    """
+    assert operations.divide(0, 5) == 0
+    assert operations.divide(0.0, 10.0) == 0.0
+    assert operations.divide(0, -3) == 0
+
+def test_divide_by_one():
+    """
+    Test 'divide' when the denominator is one.
+    """
+    assert operations.divide(5, 1) == 5
+    assert operations.divide(-10, 1) == -10
+    assert operations.divide(7.5, 1.0) == 7.5
+
+def test_divide_by_zero_raises_value_error():
+    """
+    Test 'divide' for division by zero, expecting a ValueError.
+    """
+    with pytest.raises(ValueError, match="Cannot divide by zero"):
+        operations.divide(10, 0)
+    with pytest.raises(ValueError, match="Cannot divide by zero"):
+        operations.divide(5.0, 0.0)
+    with pytest.raises(ValueError, match="Cannot divide by zero"):
+        operations.divide(-100, 0)
+
+def test_divide_non_numeric_input_raises_type_error():
+    """
+    Test 'divide' with non-numeric inputs, expecting a TypeError.
+    """
+    with pytest.raises(TypeError, match="Both dividend and divisor must be numeric"):
+        operations.divide("hello", 2)
+    with pytest.raises(TypeError, match="Both dividend and divisor must be numeric"):
+        operations.divide(5, "world")
+    with pytest.raises(TypeError, match="Both dividend and divisor must be numeric"):
+        operations.divide(None, 2)
+    with pytest.raises(TypeError, match="Both dividend and divisor must be numeric"):
+        operations.divide(5, None)
+    with pytest.raises(TypeError, match="Both dividend and divisor must be numeric"):
+        operations.divide([1], 2)
+    with pytest.raises(TypeError, match="Both dividend and divisor must be numeric"):
+        operations.divide(10, {"a": 1})
 
 
 if __name__ == '__main__':
