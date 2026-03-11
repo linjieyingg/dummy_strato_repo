@@ -18,3 +18,28 @@ def add(a, b):
         raise TypeError("Argument 'b' must be an integer or a float.")
     
     return a + b
+
+def divide(numerator, denominator):
+    """
+    Divides two numbers and returns the quotient.
+
+    Args:
+        numerator (int or float): The number to be divided.
+        denominator (int or float): The number to divide by.
+
+    Returns:
+        (float): The result of the division (numerator / denominator).
+
+    Raises:
+        TypeError: If either 'numerator' or 'denominator' is not an int or float.
+        ValueError: If 'denominator' is zero.
+    """
+    if not isinstance(numerator, (int, float)):
+        raise TypeError("Argument 'numerator' must be an integer or a float.")
+    if not isinstance(denominator, (int, float)):
+        raise TypeError("Argument 'denominator' must be an integer or a float.")
+    
+    if denominator == 0:
+        raise ValueError("Cannot divide by zero.")
+    
+    return float(numerator) / denominator
