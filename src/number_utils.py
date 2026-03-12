@@ -1,5 +1,6 @@
 # src/number_utils.py
 import numbers
+from typing import Union
 
 def is_even_or_odd(num):
     """
@@ -60,3 +61,43 @@ def is_even_or_odd(num):
         return "even"
     else:
         return "odd"
+
+def check_number_sign(num: Union[int, float]) -> str:
+    """
+    Determines if a given number is positive, negative, or zero.
+
+    Args:
+        num (Union[int, float]): The number to check its sign.
+
+    Returns:
+        str: "positive" if the number is greater than zero.
+             "negative" if the number is less than zero.
+             "zero" if the number is exactly zero.
+
+    Raises:
+        TypeError: If the input `num` is not an int or float.
+
+    Examples:
+        >>> check_number_sign(5)
+        'positive'
+        >>> check_number_sign(-3.5)
+        'negative'
+        >>> check_number_sign(0)
+        'zero'
+        >>> check_number_sign(100.0)
+        'positive'
+        >>> try:
+        ...     check_number_sign("abc")
+        ... except TypeError as e:
+        ...     print(e)
+        Input must be a number (int or float).
+    """
+    if not isinstance(num, (int, float)):
+        raise TypeError("Input must be a number (int or float).")
+
+    if num > 0:
+        return "positive"
+    elif num < 0:
+        return "negative"
+    else:
+        return "zero"
