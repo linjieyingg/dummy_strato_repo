@@ -93,3 +93,35 @@ def round_number_to_place(number: Union[float, int], place: str) -> float:
     # (e.g., round half up) is consistently required across the application,
     # the 'decimal' module or custom logic should be employed.
     return round(number, ndigits)
+
+def celsius_to_fahrenheit(celsius: Union[int, float]) -> float:
+    """
+    Converts a temperature from Celsius to Fahrenheit.
+
+    The formula used for conversion is: F = (C * 9/5) + 32.
+
+    Args:
+        celsius (Union[int, float]): The temperature in degrees Celsius.
+                                     Can be an integer or a floating-point number.
+
+    Returns:
+        float: The equivalent temperature in degrees Fahrenheit.
+
+    Raises:
+        TypeError: If 'celsius' is not an int or float.
+
+    Example Usage:
+        >>> celsius_to_fahrenheit(0)
+        32.0
+        >>> celsius_to_fahrenheit(100)
+        212.0
+        >>> celsius_to_fahrenheit(25.5)
+        77.9
+        >>> celsius_to_fahrenheit(-10)
+        14.0
+    """
+    if not isinstance(celsius, (int, float)):
+        raise TypeError(f"Expected 'celsius' to be an int or float, but got {type(celsius).__name__}")
+
+    fahrenheit = (celsius * 9/5) + 32
+    return float(fahrenheit)
