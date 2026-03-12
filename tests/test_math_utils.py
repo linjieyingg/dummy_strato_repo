@@ -11,7 +11,7 @@ import os
 # └── tests/
 #     └── test_math_utils.py
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src', 'utils')))
-from math_utils import round_number_to_place
+from math_utils import round_number_to_place, celsius_to_fahrenheit
 
 
 class TestRoundNumberToPlace(unittest.TestCase):
@@ -106,6 +106,52 @@ class TestRoundNumberToPlace(unittest.TestCase):
             round_number_to_place(3.14, "two")
         with self.assertRaises(TypeError, msg="Should raise TypeError for None 'place'"):
             round_number_to_place(3.14, None)
+
+
+class TestCelsiusToFahrenheit(unittest.TestCase):
+    """
+    Unit tests for the celsius_to_fahrenheit function in src/utils/math_utils.py.
+    Covers various positive, negative, zero, and floating-point Celsius values,
+    and checks for proper error handling.
+    """
+
+    def test_positive_celsius(self):
+        """Test conversion of positive Celsius values."""
+        self.assertAlmostEqual(celsius_to_fahrenheit(0), 32.0)
+        self.assertAlmostEqual(celsius_to_fahrenheit(100), 212.0)
+        self.assertAlmostEqual(celsius_to_fahrenheit(25), 77.0)
+        self.assertAlmostEqual(celsius_to_fahrenheit(37), 98.6)
+
+    def test_negative_celsius(self):
+        """Test conversion of negative Celsius values."""
+        self.assertAlmostEqual(celsius_to_fahrenheit(-10), 14.0)
+        self.assertAlmostEqual(celsius_to_fahrenheit(-40), -40.0)
+        self.assertAlmostEqual(celsius_to_fahrenheit(-20), -4.0)
+
+    def test_zero_celsius(self):
+        """Test conversion of zero Celsius."""
+        self.assertAlmostEqual(celsius_to_fahrenheit(0), 32.0)
+        self.assertAlmostEqual(celsius_to_fahrenheit(0.0), 32.0)
+
+    def test_floating_point_celsius(self):
+        """Test conversion of floating-point Celsius values."""
+        self.assertAlmostEqual(celsius_to_fahrenheit(10.5), 50.9)
+        self.assertAlmostEqual(celsius_to_fahrenheit(21.1), 69.98)
+        self.assertAlmostEqual(celsius_to_fahrenheit(-15.3), 4.46)
+
+    def test_large_celsius_values(self):
+        """Test conversion of large Celsius values."""
+        self.assertAlmostEqual(celsius_to_fahrenheit(1000), 1832.0)
+        self.assertAlmostEqual(celsius_to_fahrenheit(-1000), -1732.0)
+
+    def test_invalid_input_type(self):
+        """Test error handling for non-numeric 'celsius' input."""
+        with self.assertRaises(TypeError, msg="Should raise TypeError for string input"):
+            celsius_to_fahrenheit("abc")
+        with self.assertRaises(TypeError, msg="Should raise TypeError for list input"):
+            celsius_to_fahrenheit([1, 2])
+        with self.assertRaises(TypeError, msg="Should raise TypeError for None input"):
+            celsius_to_fahrenheit(None)
 
 
 if __name__ == '__main__':
