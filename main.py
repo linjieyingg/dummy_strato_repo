@@ -1,7 +1,8 @@
 import argparse
 from src.operations import add as operations_add
 from src.bmi_calculator import calculate_bmi
-from src.grade_calculator import calculate_letter_grade # New import
+from src.grade_calculator import calculate_letter_grade
+from src.temperature_converter import celsius_to_fahrenheit # New import for temperature conversion
 
 def add_command(args):
     """
@@ -58,10 +59,30 @@ def grade_command(args):
     except Exception as e:
         print(f"An unexpected error occurred during grade calculation: {e}")
 
+def convert_command(args):
+    """
+    Handles the 'convert' command, performing temperature conversions.
+    Currently supports Celsius to Fahrenheit conversion.
+    It takes a float argument '--celsius', calls the celsius_to_fahrenheit function,
+    and prints the result. Includes error handling for calculation.
+    """
+    try:
+        fahrenheit_value = celsius_to_fahrenheit(args.celsius)
+        print(f"{args.celsius}°C is equal to {fahrenheit_value:.2f}°F")
+    except TypeError as e:
+        # Catches errors related to incorrect input types if the function has internal checks.
+        print(f"Error: Invalid argument type provided for temperature conversion. {e}")
+    except ValueError as e:
+        # Catches errors for invalid values if the function has specific range checks (e.g., absolute zero).
+        print(f"Error converting temperature: {e}")
+    except Exception as e:
+        # Catch any other unexpected errors during conversion
+        print(f"An unexpected error occurred during temperature conversion: {e}")
+
 def main():
     """
     Main function to parse command-line arguments and execute calculator operations.
-    It sets up an argparse CLI with subparsers for 'add', 'bmi', and 'grade' commands.
+    It sets up an argparse CLI with subparsers for 'add', 'bmi', 'grade', and 'convert' commands.
     """
     parser = argparse.ArgumentParser(
         description="A simple command-line calculator for various operations."
@@ -116,6 +137,19 @@ def main():
         help="The numeric score (e.g., 85.5) to convert to a letter grade."
     )
     grade_parser.set_defaults(func=grade_command)
+
+    # --- Add 'convert' command subparser ---
+    convert_parser = subparsers.add_parser(
+        "convert",
+        help="Convert temperature units, e.g., Celsius to Fahrenheit."
+    )
+    convert_parser.add_argument(
+        "--celsius",
+        type=float,
+        required=True,
+        help="Temperature in Celsius to convert to Fahrenheit."
+    )
+    convert_parser.set_defaults(func=convert_command)
 
     args = parser.parse_args()
 
