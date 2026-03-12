@@ -272,6 +272,20 @@ Converts a temperature from Celsius to Fahrenheit.
 """
     _update_readme_section(readme_path, section_header, entry_markdown, entry_prefix)
 
+def update_readme_for_check_number_sign_function():
+    """Updates README.md with documentation for the 'check_number_sign' function."""
+    readme_path = "README.md"
+    section_header = "## Functions"
+    entry_prefix = "###"
+    entry_markdown = """
+### `check_number_sign(number)`
+Determines the sign of a given number.
+*   **Inputs**: `number` (int or float): The number to check.
+*   **Outputs**: (str): "positive" if greater than 0, "negative" if less than 0, or "zero" if equal to 0.
+*   **Example**: `check_number_sign(5)` returns `"positive"`.
+"""
+    _update_readme_section(readme_path, section_header, entry_markdown, entry_prefix)
+
 
 if __name__ == "__main__":
     print("Starting README update process...")
@@ -291,6 +305,7 @@ if __name__ == "__main__":
         update_readme_for_remove_spaces_function()
         update_readme_for_find_longest_word_function()
         update_readme_for_celsius_to_fahrenheit_function() # New function documentation
+        update_readme_for_check_number_sign_function() # New function documentation
 
         print("README update process completed.")
     except Exception as e:
