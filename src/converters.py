@@ -1,40 +1,70 @@
-def meters_to_centimeters(meters):
+import re
+
+def binary_to_decimal(binary_str: str) -> int:
     """
-    Converts a length from meters to centimeters.
+    Converts a binary string to its decimal integer equivalent.
+
+    This function takes a string representing a binary number (composed solely of '0's and '1's)
+    and converts it into its corresponding base-10 integer value.
 
     Args:
-        meters (int or float): The length in meters to convert.
+        binary_str (str): The binary number as a string.
 
     Returns:
-        float: The equivalent length in centimeters.
+        int: The decimal integer representation of the binary string.
 
     Raises:
-        TypeError: If the input 'meters' is not an integer or a float.
+        TypeError: If `binary_str` is not a string.
+        ValueError: If `binary_str` is empty, or contains characters other than '0' or '1'.
 
-    Example:
-        >>> meters_to_centimeters(1.5)
-        150.0
-        >>> meters_to_centimeters(2)
-        200.0
+    Examples:
+        >>> binary_to_decimal("101")
+        5
+        >>> binary_to_decimal("1111")
+        15
+        >>> binary_to_decimal("0")
+        0
+        >>> binary_to_decimal("10000000")
+        128
     """
-    if not isinstance(meters, (int, float)):
-        raise TypeError("Input 'meters' must be an integer or a float.")
+    if not isinstance(binary_str, str):
+        raise TypeError("Input 'binary_str' must be a string.")
     
-    return float(meters * 100)
+    if not binary_str:
+        raise ValueError("Input 'binary_str' cannot be an empty string.")
 
+    # Use a regular expression to check if the string contains only '0's and '1's
+    if not re.fullmatch(r"[01]+", binary_str):
+        raise ValueError("Input 'binary_str' must contain only '0's and '1's.")
+
+    decimal_value = 0
+    power = 0
+    # Iterate through the binary string from right to left (least significant bit to most significant bit)
+    for digit in reversed(binary_str):
+        if digit == '1':
+            decimal_value += 2**power
+        power += 1
+    
+    return decimal_value
+
+# Example of how this might be used or tested
 if __name__ == "__main__":
-    # Example Usage
-    print(f"1.5 meters is {meters_to_centimeters(1.5)} centimeters.")
-    print(f"2 meters is {meters_to_centimeters(2)} centimeters.")
-    print(f"0.75 meters is {meters_to_centimeters(0.75)} centimeters.")
-
-    # Example of error handling
-    try:
-        meters_to_centimeters("abc")
-    except TypeError as e:
-        print(f"Error: {e}")
+    print(f"'101' in decimal is: {binary_to_decimal('101')}")
+    print(f"'1111' in decimal is: {binary_to_decimal('1111')}")
+    print(f"'0' in decimal is: {binary_to_decimal('0')}")
+    print(f"'10000000' in decimal is: {binary_to_decimal('10000000')}")
 
     try:
-        meters_to_centimeters([1, 2])
+        binary_to_decimal("102")
+    except ValueError as e:
+        print(f"Error for '102': {e}")
+
+    try:
+        binary_to_decimal("")
+    except ValueError as e:
+        print(f"Error for empty string: {e}")
+    
+    try:
+        binary_to_decimal(101)
     except TypeError as e:
-        print(f"Error: {e}")
+        print(f"Error for integer input: {e}")
