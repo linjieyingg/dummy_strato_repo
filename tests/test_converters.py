@@ -1,98 +1,73 @@
-import unittest
-import sys
-import os
+import pytest
+from src.converters import binary_to_decimal
 
-# Add the src directory to the Python path to allow importing modules from it
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-
-# pylint: disable=C0413
-import converters # noqa: E402
-
-
-class TestConverters(unittest.TestCase):
+def test_binary_to_decimal_valid_inputs():
     """
-    Test suite for the converters module, specifically targeting the
-    meters_to_centimeters function.
+    Tests binary_to_decimal with various valid binary strings.
     """
+    assert binary_to_decimal("0") == 0
+    assert binary_to_decimal("1") == 1
+    assert binary_to_decimal("10") == 2
+    assert binary_to_decimal("11") == 3
+    assert binary_to_decimal("100") == 4
+    assert binary_to_decimal("101") == 5
+    assert binary_to_decimal("111") == 7
+    assert binary_to_decimal("1000") == 8
+    assert binary_to_decimal("101010") == 42
+    assert binary_to_decimal("11111111") == 255
+    assert binary_to_decimal("100000000000000000000000000000000000000000000000000000000000000") == 2**62
 
-    def test_positive_integer_meters(self):
-        """
-        Test meters_to_centimeters with a positive integer input.
-        """
-        self.assertEqual(converters.meters_to_centimeters(1), 100)
-        self.assertEqual(converters.meters_to_centimeters(5), 500)
+def test_binary_to_decimal_leading_zeros():
+    """
+    Tests binary_to_decimal with binary strings containing leading zeros.
+    """
+    assert binary_to_decimal("00") == 0
+    assert binary_to_decimal("01") == 1
+    assert binary_to_decimal("0010") == 2
+    assert binary_to_decimal("000000000101") == 5
 
-    def test_zero_meters(self):
-        """
-        Test meters_to_centimeters with zero input.
-        """
-        self.assertEqual(converters.meters_to_centimeters(0), 0)
+def test_binary_to_decimal_invalid_type():
+    """
+    Tests binary_to_decimal with non-string inputs, expecting TypeError.
+    """
+    with pytest.raises(TypeError, match="Input must be a string."):
+        binary_to_decimal(101)
+    with pytest.raises(TypeError, match="Input must be a string."):
+        binary_to_decimal(None)
+    with pytest.raises(TypeError, match="Input must be a string."):
+        binary_to_decimal(['1', '0', '1'])
+    with pytest.raises(TypeError, match="Input must be a string."):
+        binary_to_decimal(True)
 
-    def test_negative_integer_meters(self):
-        """
-        Test meters_to_centimeters with a negative integer input.
-        """
-        self.assertEqual(converters.meters_to_centimeters(-1), -100)
-        self.assertEqual(converters.meters_to_centimeters(-10), -1000)
+def test_binary_to_decimal_empty_string():
+    """
+    Tests binary_to_decimal with an empty string, expecting ValueError.
+    """
+    with pytest.raises(ValueError, match="Input string cannot be empty."):
+        binary_to_decimal("")
 
-    def test_positive_float_meters(self):
-        """
-        Test meters_to_centimeters with a positive float input.
-        """
-        self.assertEqual(converters.meters_to_centimeters(1.5), 150.0)
-        self.assertAlmostEqual(converters.meters_to_centimeters(0.75), 75.0)
+def test_binary_to_decimal_invalid_characters():
+    """
+    Tests binary_to_decimal with strings containing non-binary characters, expecting ValueError.
+    """
+    with pytest.raises(ValueError, match="Input string must contain only '0' or '1' characters."):
+        binary_to_decimal("102")
+    with pytest.raises(ValueError, match="Input string must contain only '0' or '1' characters."):
+        binary_to_decimal("abc")
+    with pytest.raises(ValueError, match="Input string must contain only '0' or '1' characters."):
+        binary_to_decimal("1 0 1") # Spaces are not binary
+    with pytest.raises(ValueError, match="Input string must contain only '0' or '1' characters."):
+        binary_to_decimal("1.0")
+    with pytest.raises(ValueError, match="Input string must contain only '0' or '1' characters."):
+        binary_to_decimal("-101")
+    with pytest.raises(ValueError, match="Input string must contain only '0' or '1' characters."):
+        binary_to_decimal("hello")
 
-    def test_negative_float_meters(self):
-        """
-        Test meters_to_centimeters with a negative float input.
-        """
-        self.assertEqual(converters.meters_to_centimeters(-2.5), -250.0)
-        self.assertAlmostEqual(converters.meters_to_centimeters(-0.33), -33.0)
-
-    def test_large_number_meters(self):
-        """
-        Test meters_to_centimeters with a large number input.
-        """
-        self.assertEqual(converters.meters_to_centimeters(1000000), 100000000)
-        self.assertEqual(converters.meters_to_centimeters(-1000000.5), -100000050.0)
-
-    def test_string_input_raises_type_error(self):
-        """
-        Test meters_to_centimeters with a string input should raise TypeError.
-        """
-        with self.assertRaises(TypeError) as cm:
-            converters.meters_to_centimeters("not_a_number")
-        self.assertEqual(str(cm.exception), "Input must be an integer or a float.")
-
-    def test_list_input_raises_type_error(self):
-        """
-        Test meters_to_centimeters with a list input should raise TypeError.
-        """
-        with self.assertRaises(TypeError) as cm:
-            converters.meters_to_centimeters([1, 2, 3])
-        self.assertEqual(str(cm.exception), "Input must be an integer or a float.")
-
-    def test_none_input_raises_type_error(self):
-        """
-        Test meters_to_centimeters with None input should raise TypeError.
-        """
-        with self.assertRaises(TypeError) as cm:
-            converters.meters_to_centimeters(None)
-        self.assertEqual(str(cm.exception), "Input must be an integer or a float.")
-
-    def test_boolean_input_raises_type_error(self):
-        """
-        Test meters_to_centimeters with boolean input should raise TypeError.
-        Note: Python treats True/False as 1/0 in arithmetic, but for strict
-        type checking, it should be caught.
-        """
-        with self.assertRaises(TypeError) as cm:
-            converters.meters_to_centimeters(True)
-        self.assertEqual(str(cm.exception), "Input must be an integer or a float.")
-        with self.assertRaises(TypeError) as cm:
-            converters.meters_to_centimeters(False)
-        self.assertEqual(str(cm.exception), "Input must be an integer or a float.")
-
-
-if __name__ == '__main__':
-    unittest.main()
+def test_binary_to_decimal_mixed_invalid_and_valid_chars():
+    """
+    Tests binary_to_decimal with strings containing a mix of valid and invalid characters.
+    """
+    with pytest.raises(ValueError, match="Input string must contain only '0' or '1' characters."):
+        binary_to_decimal("101a01")
+    with pytest.raises(ValueError, match="Input string must contain only '0' or '1' characters."):
+        binary_to_decimal("101_01")
