@@ -39,4 +39,42 @@ def is_palindrome(text: str) -> bool:
     # We compare the processed string with its reversed version.
     return processed_text == processed_text[::-1]
 
-# You can add more utility functions here as needed
+def decimal_to_binary(decimal_num: int) -> str:
+    """
+    Converts a non-negative decimal integer to its binary representation.
+
+    Args:
+        decimal_num (int): The non-negative decimal integer to convert.
+
+    Returns:
+        str: The binary representation of the decimal number as a string.
+
+    Raises:
+        TypeError: If the input 'decimal_num' is not an integer.
+        ValueError: If the input 'decimal_num' is negative.
+
+    Example:
+        >>> decimal_to_binary(0)
+        '0'
+        >>> decimal_to_binary(1)
+        '1'
+        >>> decimal_to_binary(10)
+        '1010'
+        >>> decimal_to_binary(255)
+        '11111111'
+    """
+    if not isinstance(decimal_num, int):
+        raise TypeError("Input must be an integer.")
+    if decimal_num < 0:
+        raise ValueError("Input must be a non-negative integer.")
+
+    if decimal_num == 0:
+        return '0'
+
+    binary_representation = []
+    temp_num = decimal_num
+    while temp_num > 0:
+        binary_representation.append(str(temp_num % 2))
+        temp_num //= 2
+    
+    return "".join(binary_representation[::-1])
