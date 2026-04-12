@@ -72,10 +72,9 @@ class TestCalculatorLogic(unittest.TestCase):
             add(5, "3")
         with self.assertRaisesRegex(TypeError, "Input 'b' must be a numeric type \(int or float\)."):
             add(5, {"key": "value"})
+        # False is considered numeric (int 0) and would not raise a TypeError.
+        # Removing the problematic test case for False.
         with self.assertRaisesRegex(TypeError, "Input 'b' must be a numeric type \(int or float\)."):
-            add(5, False) # False is 0, so this won't raise type error. Correct check needed.
-            # Re-evaluating: 'False' is considered numeric (int 0). So a non-numeric for b should be something else.
-            # Let's use a list instead of False.
             add(5, [1,2]) # This will trigger b non-numeric.
 
     def test_add_non_numeric_both_type_error(self):
