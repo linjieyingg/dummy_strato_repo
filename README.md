@@ -29,4 +29,11 @@ This file contains a comprehensive suite of unit tests for the `calculate_pyrami
 ---
 
 
-## `tests/utils_test.py
+## `tests/utils_test.py`
+
+---
+
+
+## How to Run the Calculator
+
+To run the command-line interface (CLI) for the calculator, execute the following command from the project root directory:
