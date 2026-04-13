@@ -1,3 +1,4 @@
+markdown
 ---
 
 
@@ -29,4 +30,21 @@ This file contains a comprehensive suite of unit tests for the `calculate_pyrami
 ---
 
 
-## `tests/utils_test.py
+## `tests/utils_test.py`
+
+---
+
+## Simple Calculator with UI
+
+This project includes a basic graphical calculator application built using Python's `tkinter` library. It provides a simple interface for performing fundamental arithmetic operations.
+
+### Features:
+
+*   **Addition** (+)
+*   **Subtraction** (-)
+*   **Multiplication** (*)
+*   **Division** (/)
+
+### How to Run:
+
+To launch the calculator application, execute the following command from the project's root directory:
