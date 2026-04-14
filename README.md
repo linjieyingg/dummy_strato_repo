@@ -1,3 +1,4 @@
+markdown
 ---
 
 
@@ -29,4 +30,19 @@ This file contains a comprehensive suite of unit tests for the `calculate_pyrami
 ---
 
 
-## `tests/utils_test.py
+## `src/utils.py`
+
+This file contains various utility functions that can be reused across the project.
+
+### Key Components:
+
+*   **Function**: `calculate_bmi(weight_kg, height_m)`
+    *   **Purpose**: Calculates the Body Mass Index (BMI) given a person's weight and height.
+    *   **Parameters**:
+        *   `weight_kg` (float or int): The individual's weight in kilograms. Must be a positive number.
+        *   `height_m` (float or int): The individual's height in meters. Must be a positive number.
+    *   **Returns**: (float) The calculated BMI value.
+    *   **Raises**:
+        *   `TypeError`: If `weight_kg` or `height_m` are not numeric types (int or float).
+        *   `ValueError`: If `weight_kg` or `height_m` are zero or negative.
+    *   **Example**:
