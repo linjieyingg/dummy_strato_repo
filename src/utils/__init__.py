@@ -1,16 +1,15 @@
 """
-Initialize the 'utils' Python package.
+Declares the 'src/utils' directory as a Python sub-package.
 
-This package provides a collection of utility functions and helper modules
-used throughout the project to encapsulate common operations and improve code reusability.
+This enables Python to recognize 'utils' as a module within the 'src' package
+and allows for relative imports within the 'src/utils' sub-package structure.
+
+Any common utilities or functions that should be directly accessible
+when importing 'src.utils' could be exposed here (e.g., `from .module import func`).
+However, for the sole purpose of package declaration, no further content is necessary.
 """
-# This file can remain empty if no package-level initialization or
-# sub-module exposure is required upon import.
-# It serves primarily to mark the 'utils' directory as a Python package.
-
-# Example of potential package-level exports (uncomment if needed):
-# from . import file_parser
-# from . import data_processor
-# from .file_parser import parse_csv_data
-# from .data_processor import process_raw_data
-```
+# No other content is necessary for the stated purpose of declaring
+# 'src/utils' as a package and enabling relative imports.
+# Further functionality (e.g., exposing utility functions directly,
+# defining package-level configurations) would be added here if required
+# by specific design decisions, but it is not requested by the current purpose.
