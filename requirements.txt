@@ -5,3 +5,5 @@ langchain-community
 python-dotenv
 google-generativeai
 requests
+# Auto-detected dependencies
+main
