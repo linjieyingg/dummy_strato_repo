@@ -68,33 +68,37 @@ class ExpressionParser:
         expression = expression.replace('^', '**')  # Convert `^` to `**` for exponentiation
 
         # Prepare patterns for allowed constants and functions, ordered by length to handle
-        # cases like 'log10' before 'log' correctly with word boundaries.
+        # cases like 'log10' before 'log' correctly.
         constant_names = sorted(self._allowed_constants.keys(), key=len, reverse=True)
-        # \b ensures full word match for constants, preventing 'tau' from matching in 'mytau'.
-        constant_pattern = r'\b(' + '|'.join(re.escape(c) for c in constant_names) + r')\b'
+        # constant_regex_group creates a non-capturing group of all constant names.
+        constant_regex_group = '(' + '|'.join(re.escape(c) for c in constant_names) + ')'
 
         function_names = sorted(self._allowed_functions.keys(), key=len, reverse=True)
-        # \b ensures full word match for functions.
-        function_pattern = r'\b(' + '|'.join(re.escape(f) for f in function_names) + r')\b'
+        # function_regex_group creates a non-capturing group of all function names.
+        function_regex_group = '(' + '|'.join(re.escape(f) for f in function_names) + ')'
 
         # Apply implicit multiplication rules. Order is important to prevent regex conflicts.
 
-        # Pattern 1: Number, 'x', or ')' followed by a constant.
-        # E.g., '2pi' -> '2*pi', 'xpi' -> 'x*pi', '(x+1)pi' -> '(x+1)*pi'
-        expression = re.sub(r'(\d+(?:\.\d*)?|x|\))(' + constant_pattern + r')', r'\1*\2', expression)
+        # Pattern 1 (A): Number followed by a constant.
+        # E.g., '2.5pi' -> '2.5*pi'. The \b ensures 'pi' is a whole word after the number.
+        expression = re.sub(r'(\d+(?:\.\d*)?)(' + constant_regex_group + r'\b)', r'\1*\2', expression)
+        
+        # Pattern 1 (B): 'x' or ')' followed by a constant.
+        # E.g., 'xpi' -> 'x*pi', '(x+1)pi' -> '(x+1)*pi'. The \b ensures constant is a whole word.
+        expression = re.sub(r'(x|\))(\b' + constant_regex_group + r'\b)', r'\1*\2', expression)
 
         # Pattern 2: Number or ')' followed by 'x' (the variable).
         # This explicitly targets the variable 'x' after a number or closing parenthesis.
         # E.g., '2x' -> '2*x', '(x+1)x' -> '(x+1)*x'
         expression = re.sub(r'(\d+(?:\.\d*)?|\))([x])', r'\1*\2', expression)
 
-        # Pattern 3: Number, 'x', or ')' followed by a function call (function name immediately followed by '(').
-        # This ensures implicit multiplication for functions only when they are being called.
-        # E.g., '2sin(x)' -> '2*sin(x)', 'xsin(x)' -> 'x*sin(x)', '(x+1)sin(x)' -> '(x+1)*sin(x)'
-        # Group 1: preceding element (number, x, or )).
-        # Group 2: function name.
-        # Group 3: opening parenthesis.
-        expression = re.sub(r'(\d+(?:\.\d*)?|x|\))(' + function_pattern + r')(\()', r'\1*\2\3', expression)
+        # Pattern 3 (A): Number followed by a function call (function name immediately followed by '(').
+        # E.g., '2sin(x)' -> '2*sin(x)'. The \b ensures function name is a whole word.
+        expression = re.sub(r'(\d+(?:\.\d*)?)(' + function_regex_group + r'\b)(\()', r'\1*\2\3', expression)
+
+        # Pattern 3 (B): 'x' or ')' followed by a function call.
+        # E.g., 'xsin(x)' -> 'x*sin(x)', '(x+1)sin(x)' -> '(x+1)*sin(x)'. The \b ensures function name is a whole word.
+        expression = re.sub(r'(x|\))(\b' + function_regex_group + r'\b)(\()', r'\1*\2\3', expression)
 
         # Pattern 4: Closing parenthesis followed by an opening parenthesis.
         # E.g., '(x+1)(x-1)' -> '(x+1)*(x-1)'

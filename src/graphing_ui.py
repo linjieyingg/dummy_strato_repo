@@ -265,7 +265,13 @@ class GraphingUI:
         if len(canvas_points) > 1:
             self.canvas.create_line(canvas_points, fill="blue", width=2)
 
-if __name__ == "__main__":
+def run_calculator():
+    """
+    Main entry point for launching the Graphing Calculator UI.
+    """
     root = tk.Tk()
     app = GraphingUI(root)
     root.mainloop()
+
+if __name__ == "__main__":
+    run_calculator()
