@@ -6,4 +6,4 @@ python-dotenv
 google-generativeai
 requests
 # Auto-detected dependencies
-main
+# Removed 'main' as it is not a valid package dependency.

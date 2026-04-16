@@ -51,10 +51,12 @@ class ExpressionParser:
         - Removes all whitespace.
         - Converts `^` to `**` for exponentiation.
         - Inserts '*' for common implicit multiplication patterns like:
-          - Number followed by 'x', or an identifier (e.g., '2x', '2pi', '2sin(x)')
-          - 'x' followed by '(', or an identifier (e.g., 'x(x+1)', 'xpi', 'xsin(x)')
-          - ')' followed by 'x', '(', or an identifier (e.g., '(x+1)x', '(x+1)(x-1)', '(x+1)sin(x)')
+          - Number, 'x', or ')' followed by a constant (e.g., '2pi', 'xpi', '(x+1)pi')
+          - Number or ')' followed by 'x' (e.g., '2x', '(x+1)x')
+          - Number, 'x', or ')' followed by a function call (e.g., '2sin(x)', 'xsin(x)', '(x+1)sin(x)')
           - Number followed by '(' (e.g., '2(x+1)')
+          - 'x' followed by '(' (e.g., 'x(x+1)')
+          - ')' followed by '(' (e.g., '(x+1)(x-1)')
 
         Args:
             expression: The raw mathematical expression string.
@@ -63,38 +65,48 @@ class ExpressionParser:
             The preprocessed expression string.
         """
         expression = expression.replace(' ', '')  # Remove all whitespace
+        expression = expression.replace('^', '**')  # Convert `^` to `**` for exponentiation
 
-        # Convert `^` to `**` for exponentiation
-        expression = expression.replace('^', '**')
+        # Prepare patterns for allowed constants and functions, ordered by length to handle
+        # cases like 'log10' before 'log' correctly with word boundaries.
+        constant_names = sorted(self._allowed_constants.keys(), key=len, reverse=True)
+        # \b ensures full word match for constants, preventing 'tau' from matching in 'mytau'.
+        constant_pattern = r'\b(' + '|'.join(re.escape(c) for c in constant_names) + r')\b'
 
-        # Handle implicit multiplication using specific regex patterns.
-        # The order of these replacements is important.
+        function_names = sorted(self._allowed_functions.keys(), key=len, reverse=True)
+        # \b ensures full word match for functions.
+        function_pattern = r'\b(' + '|'.join(re.escape(f) for f in function_names) + r')\b'
 
-        # Pattern 1: Number (integer or float) followed by 'x', or an identifier (function/constant).
-        # This regex ensures the number can be an integer or float. The `[a-zA-Z_]+` matches
-        # the longest possible identifier name (e.g., 'log10' instead of just 'log').
-        # E.g., '2x' -> '2*x', '2.5pi' -> '2.5*pi', '2sin(x)' -> '2*sin(x)'
-        expression = re.sub(r'(\d+(?:\.\d*)?)([a-zA-Z_]+)', r'\1*\2', expression)
+        # Apply implicit multiplication rules. Order is important to prevent regex conflicts.
 
-        # Pattern 2: 'x' followed by an identifier.
-        # E.g., 'xpi' -> 'x*pi', 'xsin(x)' -> 'x*sin(x)'
-        expression = re.sub(r'(x)([a-zA-Z_]+)', r'\1*\2', expression)
+        # Pattern 1: Number, 'x', or ')' followed by a constant.
+        # E.g., '2pi' -> '2*pi', 'xpi' -> 'x*pi', '(x+1)pi' -> '(x+1)*pi'
+        expression = re.sub(r'(\d+(?:\.\d*)?|x|\))(' + constant_pattern + r')', r'\1*\2', expression)
 
-        # Pattern 3: 'x' followed by '('.
-        # E.g., 'x(x+1)' -> 'x*(x+1)'
-        expression = re.sub(r'(x)(\()', r'\1*\2', expression)
+        # Pattern 2: Number or ')' followed by 'x' (the variable).
+        # This explicitly targets the variable 'x' after a number or closing parenthesis.
+        # E.g., '2x' -> '2*x', '(x+1)x' -> '(x+1)*x'
+        expression = re.sub(r'(\d+(?:\.\d*)?|\))([x])', r'\1*\2', expression)
 
-        # Pattern 4: ')' followed by 'x', or an identifier.
-        # E.g., '(x+1)x' -> '(x+1)*x', '(x+1)pi' -> '(x+1)*pi', '(x+1)sin(x)' -> '(x+1)*sin(x)'
-        expression = re.sub(r'(\))([a-zA-Z_]+)', r'\1*\2', expression)
+        # Pattern 3: Number, 'x', or ')' followed by a function call (function name immediately followed by '(').
+        # This ensures implicit multiplication for functions only when they are being called.
+        # E.g., '2sin(x)' -> '2*sin(x)', 'xsin(x)' -> 'x*sin(x)', '(x+1)sin(x)' -> '(x+1)*sin(x)'
+        # Group 1: preceding element (number, x, or )).
+        # Group 2: function name.
+        # Group 3: opening parenthesis.
+        expression = re.sub(r'(\d+(?:\.\d*)?|x|\))(' + function_pattern + r')(\()', r'\1*\2\3', expression)
 
-        # Pattern 5: ')' followed by '('.
+        # Pattern 4: Closing parenthesis followed by an opening parenthesis.
         # E.g., '(x+1)(x-1)' -> '(x+1)*(x-1)'
         expression = re.sub(r'(\))(\()', r'\1*\2', expression)
 
-        # Pattern 6: Number followed by '('.
+        # Pattern 5: Number followed by an opening parenthesis.
         # E.g., '2(x+1)' -> '2*(x+1)'
         expression = re.sub(r'(\d+(?:\.\d*)?)(\()', r'\1*\2', expression)
+        
+        # Pattern 6: Variable 'x' followed by an opening parenthesis.
+        # E.g., 'x(x+1)' -> 'x*(x+1)'
+        expression = re.sub(r'(x)(\()', r'\1*\2', expression)
 
         return expression
 
@@ -119,7 +131,8 @@ class ExpressionParser:
         for name in self._allowed_constants:
             allowed_name_chars.update(name)
 
-        # Basic allowed characters (digits, 'x', '.', operators, parentheses)
+        # Basic allowed characters (digits, 'x', '.', operators, parentheses).
+        # Note: '^' is not allowed here as _preprocess_expression converts it to '**'.
         basic_allowed_chars = r"0-9x\.\+\-*/\(\)"
         # Escape special regex characters in the collected name characters
         name_char_pattern = re.escape("".join(sorted(list(allowed_name_chars))))
