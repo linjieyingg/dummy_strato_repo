@@ -129,6 +129,15 @@ class GuessNumberGame:
         """
         return self._game_won or self._attempts_left <= 0
 
+    def is_game_won(self) -> bool:
+        """
+        Returns whether the current game has been won.
+
+        Returns:
+            bool: True if the game is won, False otherwise.
+        """
+        return self._game_won
+
     def get_remaining_attempts(self) -> int:
         """
         Returns the number of attempts left in the current game.

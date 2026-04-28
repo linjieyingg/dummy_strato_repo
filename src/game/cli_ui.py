@@ -46,7 +46,7 @@ class CliUI:
                 CliUI.display_error_message("Invalid input. Please enter a whole number.")
             except EOFError:
                 # Handle Ctrl+D or end of input stream
-                CliUI.display_message("\nExiting game. Goodbye!")
+                CliUI.display_feedback("\nExiting game. Goodbye!") # Changed display_message to display_feedback
                 sys.exit(0) # Exit the program gracefully
 
     @staticmethod
@@ -104,7 +104,7 @@ class CliUI:
                     CliUI.display_error_message("Invalid input. Please enter 'yes' or 'no'.")
             except EOFError:
                 # Handle Ctrl+D during play again prompt
-                CliUI.display_message("\nExiting game. Goodbye!")
+                CliUI.display_feedback("\nExiting game. Goodbye!") # Changed display_message to display_feedback
                 sys.exit(0)
 
     @staticmethod

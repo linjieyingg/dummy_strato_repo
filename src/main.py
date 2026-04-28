@@ -2,16 +2,58 @@ import argparse
 import sys
 
 # Import game logic and UI components
-from game.guess_number import GuessNumberGame
-from game.cli_ui import CliUI
+# FIX: Change imports to be absolute from the 'src' package
+from src.game.guess_number import GuessNumberGame
+from src.game.cli_ui import CliUI
+
+def play_single_game(game: GuessNumberGame):
+    """
+    Manages the core game loop for a single round of 'Guess the Number'.
+
+    Args:
+        game (GuessNumberGame): An initialized GuessNumberGame instance.
+    """
+    # Display the welcome message using the game's configured parameters
+    # FIX: Use public getter methods instead of protected attributes
+    min_num, max_num = game.get_range()
+    CliUI.display_welcome_message(min_num, max_num, game.get_max_attempts())
+
+    # Game loop for a single round
+    while not game.is_game_over():
+        try:
+            # Calculate the current attempt number for the UI prompt
+            # FIX: Use public getter methods instead of protected attributes
+            current_attempt_num_display = game.get_max_attempts() - game.get_remaining_attempts() + 1
+            guess = CliUI.prompt_for_guess(current_attempt_num_display, game.get_max_attempts())
+        except EOFError:
+            # This is primarily caught within CliUI.prompt_for_guess, but kept here for robustness
+            # or if prompt_for_guess ever changes its exit behavior.
+            CliUI.display_feedback("\nGame aborted by user. Goodbye!")
+            sys.exit(0)
+
+        # Process the player's guess
+        # FIX: Change make_guess to check_guess
+        feedback = game.check_guess(guess)
+        CliUI.display_feedback(feedback) # Display the feedback from the game logic
+
+        # If game is not over after the guess, provide remaining attempts feedback.
+        if not game.is_game_over():
+            # FIX: Use public getter methods instead of protected attributes
+            CliUI.display_feedback(f"Attempts left: {game.get_remaining_attempts()}\n")
+
+    # After the loop, the game is over. Determine if it was a win or loss.
+    # FIX: Use is_game_won() for explicit win/loss check and CliUI messages
+    if game.is_game_won():
+        # attempts_taken = MaxAttempts - RemainingAttempts (as remaining is decremented on winning guess)
+        attempts_taken = game.get_max_attempts() - game.get_remaining_attempts()
+        CliUI.display_win_message(game.get_secret_number(), attempts_taken)
+    else:
+        CliUI.display_lose_message(game.get_secret_number())
 
 def main():
     """
     Main entry point for running the 'Guess the Number' game.
-
-    This function parses command-line arguments for game parameters,
-    initializes the game logic, and orchestrates the user interface
-    interactions to guide the player through the game.
+    Handles argument parsing and the play-again loop.
     """
     parser = argparse.ArgumentParser(
         description="Play the 'Guess the Number' game.",
@@ -34,55 +76,20 @@ def main():
     )
     args = parser.parse_args()
 
-    # Initialize the game logic component
-    game: GuessNumberGame = None
-    try:
-        # Pass parsed arguments directly. If None, GuessNumberGame will use its defaults.
-        game = GuessNumberGame(min_num=args.min, max_num=args.max, max_attempts=args.attempts)
-    except (ValueError, TypeError) as e:
-        print(f"Error initializing game: {e}", file=sys.stderr)
-        sys.exit(1)
-
-    # Display the welcome message using the game's configured parameters
-    # Accessing protected attributes for display purposes, assuming they are available
-    # and contain the finalized game configuration.
-    CliUI.display_welcome_message(game._min_num, game._max_num, game._max_attempts)
-
-    # Game loop
-    while not game.is_game_over():
+    while True: # Outer loop for playing multiple games
+        game: GuessNumberGame = None
         try:
-            # Calculate the current attempt number for the UI prompt
-            current_attempt_num = game._max_attempts - game._remaining_attempts + 1
-            guess = CliUI.prompt_for_guess(current_attempt_num, game._max_attempts)
-        except EOFError:
-            print("\nGame aborted by user. Goodbye!")
-            sys.exit(0)
-        # CliUI.prompt_for_guess is designed to handle invalid input internally
-        # and re-prompt, so no further ValueError catch is needed here for input.
+            # Pass parsed arguments directly. If None, GuessNumberGame will use its defaults.
+            game = GuessNumberGame(min_num=args.min, max_num=args.max, max_attempts=args.attempts)
+        except (ValueError, TypeError) as e:
+            print(f"Error initializing game: {e}", file=sys.stderr)
+            sys.exit(1)
 
-        # Process the player's guess
-        feedback = game.make_guess(guess)
+        play_single_game(game) # Play one round
 
-        if feedback == "too high":
-            print("Your guess is too high!")
-        elif feedback == "too low":
-            print("Your guess is too low!")
-        elif feedback == "correct":
-            print(
-                f"\n🎉 Congratulations! You guessed the number {game._secret_number} "
-                f"in {current_attempt_num} attempts."
-            )
-            break  # Game won, exit the loop
-
-        # Provide feedback on remaining attempts if the game is not yet over
-        if not game.is_game_over():
-            print(f"Attempts left: {game._remaining_attempts}\n")
-
-    # After the loop, if the game was not won, it means attempts ran out
-    if not game.is_won():
-        print(f"\n😞 Sorry, you ran out of attempts! The secret number was {game._secret_number}.")
-        print("Game Over.")
-
+        if not CliUI.prompt_to_play_again():
+            CliUI.display_feedback("Thanks for playing! Goodbye!")
+            break # Exit the outer play-again loop
 
 if __name__ == "__main__":
     main()
