@@ -19,16 +19,15 @@ from src.main import *
 # Tests for main()
 # ============================================================================
 
-The `main` function directly orchestrates user interaction, relying on `CliUI.prompt_for_guess` to obtain input from the user.
-
-According to the provided rules, specifically:
-
-> 9. CRITICAL: DO NOT write tests for functions that call `input()`. They block headless CI and cause StopIteration errors. Only test pure logic/math functions. If the function requires `input()`, do not generate a test for it.
-
-The `main` function falls under this prohibition. Therefore, I cannot generate test cases for it.
+# The `main` function directly orchestrates user interaction, relying on `CliUI.prompt_for_guess` to obtain input from the user.
+#
+# According to the provided rules, specifically:
+#
+# > 9. CRITICAL: DO NOT write tests for functions that call `input()`. They block headless CI and cause StopIteration errors. Only test pure logic/math functions. If the function requires `input()`, do not generate a test for it.
+#
+# The `main` function falls under this prohibition. Therefore, I cannot generate test cases for it.
 
 
 # ============================================================================
 # Edge Case Tests
 # ============================================================================
-

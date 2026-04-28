@@ -111,7 +111,9 @@ def test_display_welcome_message_large_numbers(capsys):
 # Tests for prompt_for_guess()
 # ============================================================================
 
-The `prompt_for_guess` function directly calls `input()`, which would block headless CI environments and cause `StopIteration` errors. According to the provided rules (Rule 9: "CRITICAL: DO NOT write tests for functions that call `input()`. ... If the function requires `input()`, do not generate a test for it."), I cannot generate test cases for this function.
+# The `prompt_for_guess` function directly calls `input()`, which would block headless CI environments and cause `StopIteration` errors.
+# According to the provided rules (Rule 9: "CRITICAL: DO NOT write tests for functions that call `input()`. ... If the function requires `input()`, do not generate a test for it."),
+# I cannot generate test cases for this function.
 
 
 # ============================================================================
@@ -324,9 +326,11 @@ def test_display_lose_message_negative_number(capsys):
 # Tests for prompt_to_play_again()
 # ============================================================================
 
-**CRITICAL NOTE: Rule 9 states:** "CRITICAL: DO NOT write tests for functions that call `input()`. They block headless CI and cause StopIteration errors. Only test pure logic/math functions. If the function requires `input()`, do not generate a test for it."
-
-The `prompt_to_play_again` function directly calls `input()` to receive user input. Therefore, according to the provided rules, I cannot generate test cases for this function. Testing functions that interact with `input()` requires mocking `input()`, which is explicitly disallowed by Rule 9's intent to avoid such blocking behavior in headless CI.
+# **CRITICAL NOTE: Rule 9 states:** "CRITICAL: DO NOT write tests for functions that call `input()`. They block headless CI and cause StopIteration errors. Only test pure logic/math functions. If the function requires `input()`, do not generate a test for it."
+#
+# The `prompt_to_play_again` function directly calls `input()` to receive user input. Therefore, according to the provided rules,
+# I cannot generate test cases for this function. Testing functions that interact with `input()` requires mocking `input()`,
+# which is explicitly disallowed by Rule 9's intent to avoid such blocking behavior in headless CI.
 
 
 # ============================================================================
@@ -436,4 +440,3 @@ def test_cliui_display_error_message(cliui_instance):
 # ============================================================================
 # Edge Case Tests
 # ============================================================================
-
