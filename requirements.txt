@@ -1,0 +1,9 @@
+langchain
+langchain-google-genai
+langgraph
+langchain-community
+python-dotenv
+google-generativeai
+requests
+# Auto-detected dependencies
+pytest-mock
